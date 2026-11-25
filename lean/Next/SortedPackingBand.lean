@@ -1,4 +1,4 @@
-import Next.SortedPacking
+import Next.SortedPackingOwnership
 import Next.SortedPackingBankCredit
 
 namespace FixedCore.SortedPacking
@@ -46,7 +46,6 @@ theorem extension_of_band_capacity_with_bank_credit {d B : ℕ}
     exact (hcT i).trans (hcard i).symm
   · exact hcB
   · exact hsupport
-
 
 /-- Only old ranks strictly between the two banks can obstruct the
 rank choices made by shared-interval packing. -/

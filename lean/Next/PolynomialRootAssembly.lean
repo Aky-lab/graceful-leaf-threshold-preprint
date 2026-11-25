@@ -1,7 +1,7 @@
 import Next.PolynomialRoot
-import Next.PolynomialBounds
-import Next.HeavySeed
-import Next.DominantAnyRoot
+import Next.HeavyFans
+import Next.DominantTable
+import Next.Reroot
 
 /-! Actual one-large-supply branch of the polynomial theorem. Parity reserves
 are actual leaves of the target tree; no seed or completion oracle is assumed. -/
@@ -117,112 +117,4 @@ theorem star_grid (H : Core 0) (c : Demand 0) (b : ℕ) : GridGraceful H c b := 
     refine ⟨.inr ⟨0, ⟨d.val, by have := d.isLt; omega⟩⟩, ?_⟩
     simp [ends, f, diff]
 
-/-- The degree-eleven bound completes any core with bounded total secondary
-supply. Every original core label remains a multiple of `b`. -/
-theorem one_large_root_grid {k : ℕ} (H : Core k) (c : Demand k) (b n : ℕ)
-    (hb : 1≤b) (hk : k≤n)
-    (hN : PolynomialBounds.threshold b n≤k+total c)
-    (hL : DominantTable.offRoot c≤8*10^9*b*(n+1)^5) : GridGraceful H c b := by
-  classical
-  by_cases hk0 : k=0
-  · subst k
-    exact star_grid H c b
-  let r := DominantTable.reserve (DominantTable.pattern c)
-  let s := k+total r
-  let c' := Reserves.residual c r
-  have hr : ∀ i, r i≤c i := DominantTable.reserve_le c
-  have hs : s+1≤2*(n+1) := by
-    have := DominantTable.reserve_total_le (DominantTable.pattern c)
-    dsimp [s,r]
-    omega
-  have hsize : s+total c'=k+total c := Reserves.edge_count c r hr
-  have hsmall : DominantTable.offRoot c'≤8*10^9*b*(n+1)^5 :=
-    (DominantTable.residual_offRoot_le c).trans hL
-  obtain ⟨S, hmax, hratio⟩ := Next.HeavySeed.exists_consistentSeed (Reserves.core H r)
-  let M := Finset.univ.sup S.rank
-  have hupper : ∀ v, S.rank v≤M := fun v => Finset.le_sup (Finset.mem_univ v)
-  have hM : 0<M := by
-    let v : Fin (s+1) := ⟨1, by dsimp [s]; omega⟩
-    have hv : v≠0 := by intro he; have := congrArg Fin.val he; simp [v] at this
-    have hp : 0<S.rank v := by
-      have hn : S.rank v≠0 := fun he => hv (S.injective (he.trans S.root_zero.symm))
-      omega
-    exact hp.trans_le (hupper v)
-  have hR : 0<200*(s+1)^6 := by positivity
-  have hscale : 2*b*M≤s+total c' := by
-    rw [hsize]
-    exact PolynomialBounds.scale_budget hs hmax hN
-  have hbudget : 2*(200*(s+1)^6)*(2*s+3*DominantTable.offRoot c'+3)≤s+total c' := by
-    rw [hsize]
-    exact PolynomialBounds.one_bank_budget hb hs (by omega) hsmall hN
-  have hg := PolynomialRoot.extend_scaled_even S M (200*(s+1)^6) b hM hR
-    (by omega) hupper hratio (DominantTable.residual_even c) hscale hbudget
-  refine ⟨fun i => b*((s+total c')/(b*M))*S.rank (Reserves.old r i),
-    extending_of_absorbed H c r hr _ hg, ?_⟩
-  intro i
-  exact PolynomialRoot.grid b (s+total c') M S.rank (Reserves.old r i)
-
-/-- Any selected site may be the large bank; rerooting does not alter the
-actual final graph, its size, or the divisibility of original core labels. -/
-theorem one_large_site_grid {k : ℕ} (H : Core k) (c : Demand k) (x : Fin (k+1))
-    (b n : ℕ) (hb : 1≤b) (hk : k≤n)
-    (hN : PolynomialBounds.threshold b n≤k+total c)
-    (hL : total c-c x≤8*10^9*b*(n+1)^5) : GridGraceful H c b := by
-  obtain ⟨K,e,he⟩ := Reroot.exists_reroot H x
-  apply grid_of_iso e c
-  apply one_large_root_grid K (e.demand c) b n hb hk
-  · simpa using hN
-  · rw [DominantAnyRoot.offRoot_reroot e x he c]
-    exact hL
-
-/-- A supported supply vector is completed in the one-large-supply
-alternative of the manuscript. No parity, seed, or oracle is a hypothesis. -/
-theorem one_large_alternative_grid {k : ℕ} (H : Core k) (c : Demand k)
-    (sites : Finset (Fin (k+1))) (x : Fin (k+1)) (hx : x∈sites)
-    (b n : ℕ) (hb : 1≤b) (hk : k≤n) (hcount : sites.card≤n)
-    (hsupport : ∀ j, j∉sites → c j=0)
-    (hN : PolynomialBounds.threshold b n≤k+total c)
-    (small : ∀ j∈sites, j≠x → c j<10^9*b*(sites.card+2)^3*(n+1)) :
-    GridGraceful H c b := by
-  apply one_large_site_grid H c x b n hb hk hN
-  have htotal : ∑ j∈sites,c j=total c := by
-    unfold total
-    exact Finset.sum_subset (Finset.subset_univ sites) (fun j _ hj => hsupport j hj)
-  have hsum := Finset.sum_erase_add sites c hx
-  have hbound := PolynomialBounds.secondary_total sites c x b n hcount small
-  omega
-
-/-- Plain gracefulness corollary of the full grid conclusion. -/
-theorem one_large_alternative {k : ℕ} (H : Core k) (c : Demand k)
-    (sites : Finset (Fin (k+1))) (x : Fin (k+1)) (hx : x∈sites)
-    (b n : ℕ) (hb : 1≤b) (hk : k≤n) (hcount : sites.card≤n)
-    (hsupport : ∀ j, j∉sites → c j=0)
-    (hN : PolynomialBounds.threshold b n≤k+total c)
-    (small : ∀ j∈sites, j≠x → c j<10^9*b*(sites.card+2)^3*(n+1)) :
-    Graceful H c :=
-  (one_large_alternative_grid H c sites x hx b n hb hk hcount hsupport hN small).graceful
-
-/-- The manuscript's vertex-order formulation. The site-count bound follows
-from the fact that the eligible sites are vertices of the original core. -/
-theorem one_large_alternative_of_order {k : ℕ} (H : Core k) (c : Demand k)
-    (sites : Finset (Fin (k+1))) (x : Fin (k+1)) (hx : x∈sites)
-    (b n : ℕ) (hb : 1≤b) (hn : k+1≤n)
-    (hsupport : ∀ j, j∉sites → c j=0)
-    (hN : 10^16*b*(n+1)^11≤k+total c)
-    (small : ∀ j∈sites, j≠x → c j<10^9*b*(sites.card+2)^3*(n+1)) :
-    ∃ f : Vertex c → Fin (k+total c+1), Function.Injective f ∧
-      (∀ d : Fin (k+total c), ∃ e : Edge c,
-        diff (f (ends H c e).1).val (f (ends H c e).2).val=d.val+1) ∧
-      (∀ v, b ∣ (f (.inl v)).val) := by
-  have hcount : sites.card≤n := by
-    have h := Finset.card_le_card (Finset.subset_univ sites)
-    simp only [Finset.card_univ, Fintype.card_fin] at h
-    omega
-  exact (one_large_alternative_grid H c sites x hx b n hb (by omega) hcount
-    hsupport hN small).labeling
-
-#print axioms one_large_alternative_of_order
-#print axioms one_large_alternative_grid
-#print axioms one_large_root_grid
-#print axioms one_large_site_grid
 end FixedCore.PolynomialRootAssembly

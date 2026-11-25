@@ -1,6 +1,5 @@
 import Next.SeedExistence
 import Next.SeedIndexed
-import Next.PreparationGadgets
 
 namespace FixedCore.Next
 open Set

@@ -1,6 +1,5 @@
 import Next.PolynomialTwoBankException
 import Next.PolynomialTwoBankPacking
-import Next.PolynomialTwoBankParameters
 
 namespace FixedCore.PolynomialTwoBank
 open PolynomialRootAssembly

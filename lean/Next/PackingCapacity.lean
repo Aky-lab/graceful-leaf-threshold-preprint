@@ -1,4 +1,4 @@
-import Next.Bands
+import FixedCore.MirrorPairs
 import Mathlib.Tactic
 
 namespace FixedCore.PackingCapacity
@@ -33,30 +33,5 @@ def lengths {d : ℕ} (q : Fin d → ℕ) (E : ℕ) (n : ℕ) : ℕ :=
 
 @[simp] theorem lengths_val {d : ℕ} (q : Fin d → ℕ) (E : ℕ) (i : Fin d) :
     lengths q E i.val = q i + E := by simp [lengths, i.isLt]
-
-theorem prefix_eq {d : ℕ} (q : Fin d → ℕ) (E : ℕ) :
-    PackingBands.prefixSum (lengths q E) d = (∑ i, q i) + d * E := by
-  rw [PackingBands.prefixSum, ← Fin.sum_univ_eq_sum_range]
-  simp [Finset.sum_add_distrib]
-
-theorem twice_prefix {d : ℕ} (q : Fin d → ℕ) (E : ℕ) :
-    2 * PackingBands.prefixSum (lengths q E) d = (∑ i, 2 * q i) + 2 * d * E := by
-  rw [prefix_eq, ← Finset.mul_sum]
-  ring
-
-/-- The manuscript's root slack supplies the exact global band capacity. -/
-theorem from_root_slack {k d E : ℕ} (c : Demand k) (v : Fin (k+1)) (hv : v ≠ 0)
-    (site : Fin d ↪ Fin (k+1)) (hzero : ∀ i, site i ≠ 0) (hbank : ∀ i, site i ≠ v)
-    (q : Fin d → ℕ) (hcard : ∀ i, c (site i) = 2*q i)
-    (hsupport : ∀ j, j ≠ 0 → j ≠ v → j ∉ Set.range site → c j = 0)
-    (P : ℕ) (hP : P ≤ k + total c)
-    (rootSlack : k + total c - P + 2*d*E + 2*k + 4 ≤ c 0) :
-    PackingBands.prefixSum (lengths q E) d + k + c v / 2 ≤ (P-1)/2 := by
-  have ht := total_sites c v hv site hzero hbank hsupport
-  simp_rw [hcard] at ht
-  have hcapacity := PackingBands.packing_capacity (s := k) (a := c 0) (b := c v)
-    (D := ∑ i, 2*q i) (d := d) (E := E)
-    (by omega : k+c 0+c v+(∑ i, 2*q i) = k+total c) hP (twice_prefix q E) rootSlack
-  omega
 
 end FixedCore.PackingCapacity

@@ -1,4 +1,5 @@
-import Next.FullPacking
+import Next.BandGeometry
+import Next.PackingCapacity
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Fin.Tuple.Basic
 

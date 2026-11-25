@@ -2,8 +2,8 @@ import Next.RankOwnership
 import Next.OwnershipUpdates
 import FixedCore.RootCompletion
 import Next.LowBands
-import Next.HighBands
-import Next.Bands
+import Mathlib.Data.Int.Interval
+import Mathlib.Tactic.Convert
 import Mathlib.Tactic
 
 namespace FixedCore.Packing

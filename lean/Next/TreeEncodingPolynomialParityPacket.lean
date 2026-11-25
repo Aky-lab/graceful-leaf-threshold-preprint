@@ -1,5 +1,6 @@
 import Next.ParityPacketUniform
-import Next.CoprimeMarginNonleaf
+import Next.InternalCoreRepresentation
+import FixedCore.SmallCores
 
 namespace FixedCore.TreeEncoding
 open scoped BigOperators
@@ -96,9 +97,8 @@ private theorem parityPacket_graphGraceful_small_order (hG : G.IsTree) (hs : Fin
     GraphGraceful G := by
   obtain ⟨k, H, ⟨e⟩⟩ := exists_core G hG
   have hc : k+1 = Fintype.card V := by simpa using Fintype.card_congr e.toEquiv
-  have hw : Works H 0 := by
-    simpa only [gracefulThreshold_small H (by omega)] using (gracefulThreshold_spec H).1
-  exact graphGraceful_of_representation ((zeroIso H).trans e) (hw _ (Nat.zero_le _))
+  exact graphGraceful_of_representation ((zeroIso H).trans e)
+    (smallCore_graceful (by omega) H 0)
 
 /-- The same coefficient applies to the intrinsic number of nonleaves. -/
 theorem poly_parity_packet_final_nonleaf (hG : G.IsTree)

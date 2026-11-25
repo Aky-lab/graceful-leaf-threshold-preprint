@@ -85,18 +85,6 @@ theorem IndexedChildBatch.rank_lt_parent {ι : Type*} [Fintype ι]
     linarith
   exact lt_of_le_of_lt (hmax i) hm
 
-/-- The positive-parent construction is available directly on a child subtype. -/
-theorem exists_indexedChildBatch (ι : Type*) [Fintype ι] {S A : Set ℚ}
-    (F : SeedFrontier S A) {p : ℚ} (hp : p ∈ A) :
-    Nonempty (IndexedChildBatch ι S A p) := by
-  obtain ⟨B⟩ := exists_childBatch (Fintype.card ι) F hp
-  exact ⟨B.index⟩
-
-theorem exists_indexedRootBatch (ι : Type*) [Fintype ι] :
-    Nonempty (IndexedChildBatch ι ∅ ∅ 0) := by
-  obtain ⟨B⟩ := exists_rootBatch (Fintype.card ι)
-  exact ⟨B.index⟩
-
 #print axioms IndexedChildBatch.rank_lt_parent
 #print axioms ChildBatch.index
 #print axioms IndexedChildBatch.exists_matching

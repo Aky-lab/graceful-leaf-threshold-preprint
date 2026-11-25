@@ -42,52 +42,6 @@ theorem floor_additive_scaled_capacity {N M b R k L a t : ℕ}
     exact (Nat.le_of_mul_le_mul_left hc hR)
   omega
 
-/-- Actual one-bank completion at the additive threshold, retaining the
-same prescribed grid and the same original ranks after dilation. -/
-theorem extend_scaled_additive {k d : ℕ} {H : Core k} {c : Demand k}
-    (S : ConsistentSeed H) (M R b : ℕ) (hM : 0<M) (hR : 0<R) (hb : 0<b)
-    (upper : ∀ v,S.rank v≤M)
-    (lower : ∀ v,v≠0 → M≤R*S.rank v)
-    (site : Fin d ↪ Fin (k+1)) (hzero : ∀ i,site i≠0)
-    (q : Fin d→ℕ) (hcard : ∀ i,c (site i)=2*q i)
-    (hsupport : ∀ j,j≠0 → j∉Set.range site → c j=0)
-    (hbudget : b*M+R*(2*k+3*(2*∑ i,q i)+3)≤k+total c) :
-    SortedPacking.ExtendingGraceful H c (fun v => b*((k+total c)/(b*M))*S.rank v) := by
-  let N := k+total c
-  let K := b*(N/(b*M))
-  have hf := floor_additive_scale_bounds hM hb hbudget
-  let T := DominantRoot.scale S K hf.1
-  refine RootBatchPacking.extension_greedy T ?_ site hzero q hcard hsupport ?_
-  · intro v
-    change K*S.rank v≤N
-    exact (Nat.mul_le_mul_left K (upper v)).trans hf.2.1
-  · intro i
-    have hqi : q i≤∑ j,q j :=
-      Finset.single_le_sum (fun _ _ => Nat.zero_le _) (Finset.mem_univ i)
-    exact floor_additive_scaled_capacity hM hb hR (lower (site i) (hzero i)) hbudget (by omega)
-
-/-- The additive one-bank budget applies to all even nonroot demands,
-without a supplied site list. -/
-theorem extend_scaled_even_additive {k : ℕ} {H : Core k} {c : Demand k}
-    (S : ConsistentSeed H) (M R b : ℕ) (hM : 0<M) (hR : 0<R) (hb : 0<b)
-    (upper : ∀ v,S.rank v≤M)
-    (lower : ∀ v,v≠0 → M≤R*S.rank v)
-    (heven : ∀ i : Fin k,Even (c i.succ))
-    (hbudget : b*M+R*(2*k+3*(∑ i : Fin k,c i.succ)+3)≤k+total c) :
-    SortedPacking.ExtendingGraceful H c (fun v => b*((k+total c)/(b*M))*S.rank v) := by
-  classical
-  choose q hq using heven
-  have hc : ∀ i,c i.succ=2*q i := by intro i; have := hq i; omega
-  let site : Fin k ↪ Fin (k+1) := ⟨Fin.succ,Fin.succ_injective k⟩
-  apply extend_scaled_additive S M R b hM hR hb upper lower site (fun i => Fin.succ_ne_zero i) q hc
-  · intro j hj hnot
-    exact False.elim (hnot (by
-      induction j using Fin.cases with
-      | zero => exact False.elim (hj rfl)
-      | succ i => exact ⟨i,rfl⟩))
-  · simpa only [hc,← Finset.mul_sum] using hbudget
-
 #print axioms floor_additive_scale_bounds
 #print axioms floor_additive_scaled_capacity
-#print axioms extend_scaled_even_additive
 end FixedCore.PolynomialRoot

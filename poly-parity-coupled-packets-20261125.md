@@ -50,7 +50,7 @@ demands, support one, and the arithmetic at order `2^500`.
 The adjacent Python replay independently checked 143,780 exact cutoffs and 122,886
 reserve/capacity cases, including orders near powers of two through `2^500`.
 
-Focused Lake build: 3,244 jobs. Rejecting axiom audit: 133 declarations across all
+Original development audit (before the public source was trimmed): 3,244 Lake jobs. Rejecting axiom audit: 133 declarations across all
 8 new modules and 6,938 declarations across 270 project modules in the import
 closure. Only `propext`, `Classical.choice`, and `Quot.sound` were allowed.
 The source-verified closure manifest SHA-256 is

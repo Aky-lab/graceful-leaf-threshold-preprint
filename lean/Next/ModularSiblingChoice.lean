@@ -1,4 +1,4 @@
-import Next.ModularChoice
+import Next.ModularSteering
 
 namespace FixedCore.ModularFamilies
 open ModularAvoidance

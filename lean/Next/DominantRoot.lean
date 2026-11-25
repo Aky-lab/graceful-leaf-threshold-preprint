@@ -1,4 +1,4 @@
-import Next.RootBatchPacking
+import Next.BandGeometry
 import Next.Consistency
 
 namespace FixedCore.DominantRoot
@@ -28,57 +28,4 @@ theorem capacity {N M k L q : ℕ} (hM : 0 < M)
     nlinarith
   omega
 
-/-- A sufficiently large final palette and sufficiently small total demand
-away from the root give a graceful completion of a dilated consistent seed. -/
-theorem graceful_scaled {k d M : ℕ} {H : Core k} {c : Demand k}
-    (S : ConsistentSeed H) (hM : 0 < M) (rankBound : ∀ i, S.rank i ≤ M)
-    (site : Fin d ↪ Fin (k+1)) (hzero : ∀ i, site i ≠ 0)
-    (q : Fin d → ℕ) (hcard : ∀ i, c (site i) = 2 * q i)
-    (hsupport : ∀ j, j ≠ 0 → j ∉ Set.range site → c j = 0)
-    (hlarge : 16 * M * (k + 1) ≤ k + total c)
-    (hsmall : 16 * M * (2 * ∑ i, q i) ≤ k + total c) :
-    Graceful H c := by
-  let N := k + total c
-  let K := N / M
-  have hK : 0 < K := (capacity (L := 2 * ∑ i, q i) (q := 0) hM hlarge hsmall (by omega)).1
-  let S' := scale S K hK
-  refine RootBatchPacking.graceful_greedy S' ?_ site hzero q hcard hsupport ?_
-  · intro i
-    change K * S.rank i ≤ N
-    exact (Nat.mul_le_mul_left K (rankBound i)).trans (Nat.div_mul_le_self N M)
-  · intro i
-    have hqi : q i ≤ ∑ j, q j := Finset.single_le_sum (fun j _ => Nat.zero_le (q j)) (Finset.mem_univ i)
-    have hc := (capacity hM hlarge hsmall (by omega : 2 * q i ≤ 2 * ∑ j, q j)).2
-    have hpos : 0 < S.rank (site i) := by
-      have hn : S.rank (site i) ≠ 0 := fun he =>
-        hzero i (S.injective (he.trans S.root_zero.symm))
-      omega
-    have hm : K ≤ K * S.rank (site i) := by nlinarith
-    change q i + k + 2 * (∑ j, q j) ≤ (K * S.rank (site i) - 1) / 2
-    change q i + k + 2 * (∑ j, q j) ≤ (K - 1) / 2 at hc
-    omega
-
-/-- The same branch stated directly in terms of even site demands. -/
-theorem graceful_scaled_even {k d M : ℕ} {H : Core k} {c : Demand k}
-    (S : ConsistentSeed H) (hM : 0 < M) (rankBound : ∀ i, S.rank i ≤ M)
-    (site : Fin d ↪ Fin (k+1)) (hzero : ∀ i, site i ≠ 0)
-    (heven : ∀ i, Even (c (site i)))
-    (hsupport : ∀ j, j ≠ 0 → j ∉ Set.range site → c j = 0)
-    (hlarge : 16 * M * (k + 1) ≤ k + total c)
-    (hsmall : 16 * M * (∑ i, c (site i)) ≤ k + total c) :
-    Graceful H c := by
-  classical
-  choose q hq using heven
-  have hc : ∀ i, c (site i) = 2 * q i := by
-    intro i
-    have := hq i
-    omega
-  apply graceful_scaled S hM rankBound site hzero q hc hsupport hlarge
-  simp_rw [hc] at hsmall
-  simpa only [← Finset.mul_sum] using hsmall
-
-#print axioms graceful_scaled_even
-#print axioms scale
-#print axioms capacity
-#print axioms graceful_scaled
 end FixedCore.DominantRoot

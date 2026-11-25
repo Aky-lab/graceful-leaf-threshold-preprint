@@ -1,5 +1,11 @@
 import FixedCore.Semantics
-import FixedCore.Sparse
+import Mathlib.Algebra.Order.Group.Multiset
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Multiset.MapFold
+import Mathlib.Data.Rat.Defs
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.FieldSimp
 import FixedCore.RootCompletion
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Tactic
@@ -96,11 +102,6 @@ def Assignment.scale {H : Core k} (A : Assignment H c) (a : ℕ) (ha : 0 < a) :
   injective := fun _ _ h => A.injective (Nat.eq_of_mul_eq_mul_left ha h)
   consistent := A.consistent.scale a
 
-/-- Actual endpoints embedded into the rational gadget language. -/
-def rankedEdges (H : Core k) (rank : Vertex c → ℕ) : Multiset Sparse.RankedEdge :=
-  Finset.univ.val.map (fun e : Edge c =>
-    ((rank (ends H c e).1 : ℚ), (rank (ends H c e).2 : ℚ)))
-
 theorem cast_diff (x y : ℕ) : (diff x y : ℚ) = |(x : ℚ) - (y : ℚ)| := by
   rcases le_total x y with h | h
   · rw [abs_of_nonpos (sub_nonpos.mpr (by exact_mod_cast h))]
@@ -109,25 +110,8 @@ theorem cast_diff (x y : ℕ) : (diff x y : ℚ) = |(x : ℚ) - (y : ℚ)| := by
   · rw [abs_of_nonneg (sub_nonneg.mpr (by exact_mod_cast h))]
     simp [diff, Nat.sub_eq_zero_of_le h, Nat.cast_sub h]
 
-theorem differences_rankedEdges (H : Core k) (rank : Vertex c → ℕ) :
-    Sparse.differences (rankedEdges H rank) =
-      (edgeDifferences H rank).map (fun n : ℕ => (n : ℚ)) := by
-  simp only [Sparse.differences, rankedEdges, edgeDifferences, Multiset.map_map]
-  congr 1
-  funext e
-  exact (cast_diff _ _).symm
-
-/-- Local rational gadget identities can certify actual integer-labeled graphs. -/
-theorem consistent_iff_realizes (H : Core k) (rank : Vertex c → ℕ) :
-    Consistent H rank ↔ Sparse.Realizes (rankedEdges H rank)
-      ((positiveRanks rank).map (fun n : ℕ => (n : ℚ))) := by
-  unfold Consistent Sparse.Realizes
-  rw [differences_rankedEdges]
-  exact (Multiset.map_injective (Nat.cast_injective (R := ℚ))).eq_iff.symm
-
 #print axioms Assignment.graceful
 #print axioms Assignment.scale
-#print axioms consistent_iff_realizes
 
 end Consistency
 end FixedCore

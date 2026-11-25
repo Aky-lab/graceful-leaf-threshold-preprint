@@ -1,4 +1,4 @@
-import Next.GreedyPairs
+import Next.BandGeometry
 
 namespace FixedCore.GreedyPairs
 

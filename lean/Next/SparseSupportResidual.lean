@@ -1,4 +1,7 @@
-import Next.SparseCombinedCertificate
+import Mathlib.Data.List.Basic
+import Next.TreeEncodingSparseOneBank
+import Next.ModularOddTrials
+import Next.ModularForestQuadraticActual
 
 namespace FixedCore.SparseEffective
 
@@ -53,32 +56,6 @@ theorem offSiteReserve_le_positiveSites_sub_one (c : Demand k) {x : Fin (k+1)}
   calc
     _ ≤ ∑ _v ∈ (positiveDemandSites c).erase x, 1 :=
       Finset.sum_le_sum (fun v _ => by omega)
-    _ = _ := by simp
-
-theorem twoSiteTrigger_mod_two (c : Demand k) : twoSiteTrigger c % 2 = 0 := by
-  rw [twoSiteTrigger, Nat.mul_mod, Nat.mul_mod (10^9) _ 2]
-  norm_num
-
-/-- At a positive maximum whose two-site certificate rejects, each other
-positive demand is below the even threshold and leaves at most T−2 after
-its parity bit is removed. -/
-theorem offSiteEven_le_of_twoSite_false (c : Demand k) {x : Fin (k+1)}
-    (hx : 0 < c x) (hmax : ∀ v, c v ≤ c x)
-    (hfalse : twoSiteCertificate c = false) :
-    offSiteEven c x ≤ ((positiveDemandSites c).card - 1) * (twoSiteTrigger c - 2) := by
-  have hmem : x ∈ positiveDemandSites c := by simp [positiveDemandSites, hx]
-  have hmod := twoSiteTrigger_mod_two c
-  rw [offSiteEven_eq_support_sum, ← Finset.card_erase_of_mem hmem]
-  calc
-    _ ≤ ∑ _v ∈ (positiveDemandSites c).erase x, (twoSiteTrigger c - 2) := by
-      apply Finset.sum_le_sum
-      intro v hv
-      have hne : v ≠ x := (Finset.mem_erase.mp hv).1
-      have ht : c v < twoSiteTrigger c := by
-        by_contra! h
-        have ht := (twoSiteCertificate_iff c).2 ⟨x,v,hne.symm,h.trans (hmax v),h⟩
-        simp [hfalse] at ht
-      omega
     _ = _ := by simp
 
 end FixedCore.SparseEffective

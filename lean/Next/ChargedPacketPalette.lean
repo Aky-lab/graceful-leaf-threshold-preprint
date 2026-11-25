@@ -1,5 +1,6 @@
-import Next.BalancedPacketPalette
-
+import Next.CoprimePaletteSelector
+import Next.ModularAvailableBudget
+import Next.NarrowMarginPalette
 namespace FixedCore.PolynomialTwoBank.ChargedPacket
 open ModularFamilies NarrowMargin
 

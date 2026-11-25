@@ -1,4 +1,4 @@
-import Next.ModularBanksBalancedPacket
+import Next.ModularBanksPrepared
 import Next.ModularChargedLocalBound
 
 namespace FixedCore.ModularBanks.Quadratic

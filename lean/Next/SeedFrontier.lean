@@ -1,5 +1,14 @@
-import Next.DyadicAvoidance
-import FixedCore.Sparse
+import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Order.Interval.Set.Infinite
+import Mathlib.Data.Int.Interval
+import Mathlib.Tactic
+import Mathlib.Algebra.Order.Group.Multiset
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Multiset.MapFold
+import Mathlib.Data.Rat.Defs
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.FieldSimp
 
 namespace FixedCore.Next
 open Set
@@ -98,31 +107,6 @@ theorem SeedFrontier.adjoin {S A : Set ℚ} (F : SeedFrontier S A)
       · exact False.elim (hfresh y (F.subset hy) hdy.symm)
       · exact F.minimal y hy z hz hdy
 
-/-- Every positive parent admits a fresh sibling pair, arbitrarily close to
-zero on its first side, while preserving the global frontier invariant. -/
-theorem SeedFrontier.split {S A : Set ℚ} (F : SeedFrontier S A)
-    {p ε : ℚ} (hp : 0 < p) (hε : 0 < ε) :
-    ∃ t : ℚ, 0 < t ∧ t < ε ∧ t < p ∧ t ∉ S ∧ p-t ∉ insert t S ∧
-      SeedFrontier (insert (p-t) (insert t S)) (insert (p-t) (insert t A)) := by
-  obtain ⟨t, ht, hte, htp, hf, hg, hh⟩ :=
-    exists_small_dyadic_split F.finite F.positive hp hε
-  have hft : ∀ y ∈ S, ¬ Dyadic t y := by
-    rintro y hy ⟨z, hz⟩
-    exact hf y hy z hz
-  have hfg : ∀ y ∈ insert t S, ¬ Dyadic (p-t) y := by
-    intro y hy hdy
-    rcases hy with rfl | hy
-    · obtain ⟨z, hz⟩ := hdy.symm
-      exact hh z hz
-    · obtain ⟨z, hz⟩ := hdy
-      exact hg y hy z hz
-  refine ⟨t, ht, hte, htp, ?_, ?_, ?_⟩
-  · intro h
-    exact hft t h (Dyadic.refl t)
-  · intro h
-    exact hfg (p-t) h (Dyadic.refl (p-t))
-  · exact (F.adjoin ht hft).adjoin (sub_pos.mpr htp) hfg
-
 /-- Exact output contract for a finite block of children of a positive
 active parent. The children have distinct fresh ranks and locally realize
 precisely their own rank multiset. -/
@@ -135,91 +119,5 @@ structure ChildBatch (S A : Set ℚ) (p : ℚ) (n : ℕ) where
   consistent : (labels : Multiset ℚ).map (fun x => |p-x|) = labels
   frontier : SeedFrontier (S ∪ {x | x ∈ labels}) ((A \ {p}) ∪ {x | x ∈ labels})
 
-/-- Any prescribed number of children can be assigned at once. -/
-theorem exists_childBatch (n : ℕ) {S A : Set ℚ} (F : SeedFrontier S A)
-    {p : ℚ} (hp : p ∈ A) : Nonempty (ChildBatch S A p n) := by
-  induction n using Nat.twoStepInduction generalizing S A with
-  | zero =>
-    refine ⟨⟨[], rfl, by simp, by simp, by simp, by simp, ?_⟩⟩
-    simpa using F.restrict (show A \ {p} ⊆ A from fun _ h => h.1)
-  | one =>
-    have hpp := F.positive p (F.subset hp)
-    refine ⟨⟨[p/2], rfl, by simp, ?_, ?_, ?_, ?_⟩⟩
-    · simpa using F.half_fresh hp
-    · simpa using (show 0 < p/2 by positivity)
-    · simp only [Multiset.coe_singleton, Multiset.map_singleton]
-      congr 1
-      rw [abs_of_nonneg (by linarith)]
-      ring
-    · simpa [union_comm, singleton_union] using F.singleton hp
-  | more n ih _ =>
-    have hpp := F.positive p (F.subset hp)
-    obtain ⟨t, ht, _, htp, htS, hgS, F'⟩ := F.split hpp (by norm_num : (0:ℚ)<1)
-    have hpa : p ∈ insert (p-t) (insert t A) := mem_insert_of_mem _ (mem_insert_of_mem _ hp)
-    obtain ⟨B⟩ := ih F' hpa
-    have htg : t ≠ p-t := by intro h; exact hgS (by simp [← h])
-    have htB : t ∉ B.labels := by
-      intro h
-      exact B.fresh t h (by simp)
-    have hgB : p-t ∉ B.labels := by
-      intro h
-      exact B.fresh (p-t) h (by simp)
-    refine ⟨⟨t :: (p-t) :: B.labels, by simp [B.length_eq], ?_, ?_, ?_, ?_, ?_⟩⟩
-    · simp [List.nodup_cons, htg, htB, hgB, B.nodup]
-    · intro x hx hxS
-      simp only [List.mem_cons] at hx
-      rcases hx with rfl | rfl | hx
-      · exact htS hxS
-      · exact hgS (mem_insert_of_mem _ hxS)
-      · exact B.fresh x hx (mem_insert_of_mem _ (mem_insert_of_mem _ hxS))
-    · intro x hx
-      simp only [List.mem_cons] at hx
-      rcases hx with rfl | rfl | hx
-      · exact ht
-      · exact sub_pos.mpr htp
-      · exact B.positive x hx
-    · simp only [← Multiset.cons_coe, Multiset.map_cons, B.consistent]
-      rw [abs_of_nonneg (sub_nonneg.mpr htp.le)]
-      have hh : |p-(p-t)| = t := by simpa using abs_of_pos ht
-      rw [hh]
-      exact Multiset.cons_swap _ _ _
-    · convert B.frontier using 1 <;> ext x <;>
-        simp only [mem_union, mem_insert_iff, mem_setOf_eq, List.mem_cons,
-          mem_diff, mem_singleton_iff] <;> aesop
-
-/-- The initial root fan requires no positive parent: construct its ranks
-using an auxiliary positive parent and forget that auxiliary label. -/
-theorem exists_rootBatch (n : ℕ) : Nonempty (ChildBatch ∅ ∅ 0 n) := by
-  have F : SeedFrontier ({1} : Set ℚ) {1} := by
-    refine ⟨finite_singleton _, ?_, fun _ h => h, ?_⟩
-    · intro x hx
-      simpa only [mem_singleton_iff] using hx ▸ (show (0:ℚ)<1 by norm_num)
-    · intro x hx y hy _
-      simp only [mem_singleton_iff] at hx hy
-      subst x
-      subst y
-      exact le_rfl
-  obtain ⟨B⟩ := exists_childBatch n F (show (1:ℚ) ∈ ({1}:Set ℚ) from mem_singleton 1)
-  refine ⟨⟨B.labels, B.length_eq, B.nodup, by simp, B.positive, ?_, ?_⟩⟩
-  · calc
-      _ = (B.labels : Multiset ℚ).map (fun x => x) := by
-        apply Multiset.map_congr rfl
-        intro x hx
-        simpa using abs_of_pos (B.positive x (by simpa using hx))
-      _ = _ := Multiset.map_id' _
-  · refine ⟨?_, ?_, ?_, ?_⟩
-    · exact B.frontier.finite.subset (by intro x hx; simpa using Or.inr hx)
-    · intro x hx
-      exact B.positive x (by simpa using hx)
-    · simp
-    · intro x hx y hy hd
-      apply B.frontier.minimal x
-      · simpa using hx
-      · exact Or.inr (by simpa using hy)
-      · exact hd
-
 #print axioms SeedFrontier.singleton
-#print axioms SeedFrontier.split
-#print axioms exists_childBatch
-#print axioms exists_rootBatch
 end FixedCore.Next

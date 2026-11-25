@@ -23,27 +23,6 @@ theorem seedCap_le {S : ℕ} (hS : 1≤S) : seedCap S≤80000*S^7 := by
     _ = 49152*S^7 := by ring
     _ ≤ _ := Nat.mul_le_mul_right _ (by decide)
 
-theorem cutoff_le_previous (b S L : ℕ) (hS : 1≤S) :
-    cutoff b S L≤PolynomialDegreeSeven.oneBankCutoff b S L := by
-  let A := 2*(S-1)+3*L+3
-  have hs := Nat.mul_le_mul_left (2*b) (seedCap_le hS)
-  have h₁ : 2*(b*seedCap S)≤PolynomialDegreeSeven.oneBankCutoff b S L := by
-    calc
-      _ = 2*b*seedCap S := by ring
-      _ ≤ 2*b*(80000*S^7) := hs
-      _ = 160000*b*S^7 := by ring
-      _ ≤ _ := le_max_left _ _
-  have h₂ : 2*(ratio S*A)≤PolynomialDegreeSeven.oneBankCutoff b S L := by
-    calc
-      _ = 400*S^3*A := by unfold ratio; ring
-      _ ≤ _ := le_max_right _ _
-  change b*seedCap S + ratio S*A ≤ _
-  omega
-
-theorem inputCutoff_le_previous {k : ℕ} (b : ℕ) (c : Demand k) :
-    inputCutoff b c≤PolynomialDegreeSeven.inputCutoff b c :=
-  cutoff_le_previous b _ _ (by omega)
-
 def offSiteReserve {V : Type*} [Fintype V] (c : V → ℕ) (x : V) : ℕ :=
   (∑ v,c v%2) - c x%2
 

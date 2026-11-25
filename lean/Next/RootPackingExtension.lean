@@ -1,4 +1,4 @@
-import Next.RootBatchPacking
+import Next.BandGeometry
 import Next.SortedPackingOwnership
 
 namespace FixedCore.RootBatchPacking
@@ -66,49 +66,5 @@ theorem extension_of_root_batches {d : ℕ}
     · exact hcounts j hj
   · exact hp.trans (Packing.initial_palette S bound)
 
-/-- The dominant-root packing branch: the capacity inequality alone chooses
-all disjoint site families and realizes the requested graceful graph. -/
-theorem extension_greedy {d : ℕ}
-    (S : ConsistentSeed H) (bound : ∀ i, S.rank i ≤ k + total c)
-    (site : Fin d ↪ Fin (k+1)) (hzero : ∀ i, site i ≠ 0)
-    (q : Fin d → ℕ) (hcard : ∀ i, c (site i) = 2 * q i)
-    (hsupport : ∀ j, j ≠ 0 → j ∉ Set.range site → c j = 0)
-    (capacity : ∀ i, q i + k + 2 * (∑ j, q j) ≤ (S.rank (site i) - 1) / 2) :
-    SortedPacking.ExtendingGraceful H c S.rank := by
-  classical
-  let used := Finset.univ.image (fun i : Fin k => S.rank i.succ)
-  have hused : used.card = k := by
-    rw [Finset.card_image_of_injective]
-    · simp
-    · exact S.injective.comp (Fin.succ_injective k)
-  obtain ⟨T, hc, hf, hp, hcl, hd⟩ := GreedyPairs.choose_family Finset.univ q
-    (fun i => S.rank (site i)) used (by
-      intro i _
-      simpa only [hused] using capacity i)
-  apply extension_of_root_batches S bound site hzero T
-  · intro i z hz
-    exact (Nat.le_of_lt (hp i (by simp) z hz).2).trans (bound (site i))
-  · intro i z hz j he
-    by_cases hj : j = 0
-    · subst j
-      rw [S.root_zero] at he
-      have := (hp i (by simp) z hz).1
-      omega
-    · have hjp : 0 < j.val := by
-        have hn : j.val ≠ 0 := fun hh => hj (Fin.ext hh)
-        omega
-      let x : Fin k := ⟨j.val - 1, by have := j.isLt; omega⟩
-      have hx : x.succ = j := Fin.ext (by dsimp [x]; omega)
-      apply Finset.disjoint_left.mp (hf i (by simp)) hz
-      exact Finset.mem_image.mpr ⟨x, by simp, by rwa [hx]⟩
-  · intro i
-    exact hcl i (by simp)
-  · intro i j hij
-    exact hd i (by simp) j (by simp) hij
-  · intro i
-    exact (hc i (by simp)).trans (hcard i).symm
-  · exact hsupport
-
-#print axioms extension_greedy
 #print axioms extension_of_root_batches
 end FixedCore.RootBatchPacking

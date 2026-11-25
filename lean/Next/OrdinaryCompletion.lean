@@ -97,89 +97,6 @@ theorem PartialSeed.fillChildren_ready (P : PartialSeed H) (hready : P.OrdinaryR
       P.updatedRank_new H _ B.rank ⟨i,hi⟩]
     exact Or.inr ⟨⟨i,hi⟩,rfl⟩
 
-/-- Choose a legal bounded residual child batch, allowing both the root and
-positive parents excluded from singleton eligibility. -/
-theorem PartialSeed.exists_completionBatch (P : PartialSeed H) (hready : P.OrdinaryReady H)
-    (v : Fin (k+1)) (hv : v=0 ∨ ∃ j ∈ P.edges, j.succ=v)
-    {M : ℚ} (hM : 0 < M) (hbound : ∀ x ∈ P.S, x ≤ M) :
-    ∃ B : IndexedChildBatch {i // i ∈ P.remainingChildren H v} P.S P.A (P.rank v),
-      ∀ i, B.rank i ≤ M := by
-  classical
-  rcases hv with rfl | ⟨j,hj,hjv⟩
-  · rw [P.root_zero]
-    obtain ⟨B,hB⟩ := exists_fresh_rootBatch {i // i ∈ P.remainingChildren H 0} P.frontier hM
-    exact ⟨B,fun i => (hB i).le⟩
-  · have hp : 0 < P.rank v := by simpa [hjv] using P.positive j hj
-    have hb : P.rank v ≤ M := by simpa [hjv] using hbound _ (P.assigned j hj)
-    rcases hready j hj with hactive | heven
-    · have hav : P.rank v ∈ P.A := by simpa [hjv] using hactive
-      obtain ⟨B⟩ := exists_indexedChildBatch {i // i ∈ P.remainingChildren H v} P.frontier hav
-      exact ⟨B,fun i => (B.rank_lt_parent hp i).le.trans hb⟩
-    · have he : Even (Fintype.card {i // i ∈ P.remainingChildren H v}) := by
-        simpa only [Fintype.card_coe,hjv] using heven
-      obtain ⟨B⟩ := exists_indexedEvenChildBatch {i // i ∈ P.remainingChildren H v} P.frontier hp he
-      exact ⟨B,fun i => (B.rank_lt_parent hp i).le.trans hb⟩
-
-/-- Topological completion preserves every initially assigned rank and a
-common upper bound. The initial assigned subtree need not be a sibling union. -/
-theorem PartialSeed.exists_ordinaryStage (P : PartialSeed H) (hready : P.OrdinaryReady H)
-    {M : ℚ} (hM : 0 < M) (hbound : ∀ x ∈ P.S, x ≤ M)
-    (t : ℕ) (ht : t ≤ k+1) :
-    ∃ T : PartialSeed H, T.OrdinaryReady H ∧ (∀ x ∈ T.S, x ≤ M) ∧
-      (∀ i : Fin k, (H.parent i).val < t → i ∈ T.edges) ∧
-      P.edges ⊆ T.edges ∧ (∀ i ∈ P.edges, T.rank i.succ=P.rank i.succ) := by
-  classical
-  induction t with
-  | zero => exact ⟨P,hready,hbound,by omega,fun _ h=>h,fun _ _=>rfl⟩
-  | succ t ih =>
-    obtain ⟨T,hTr,hTb,hTc,hTi,hTp⟩ := ih (by omega)
-    let v : Fin (k+1) := ⟨t,by omega⟩
-    have hv : v=0 ∨ ∃ j ∈ T.edges, j.succ=v := by
-      have hall : ∀ w : Fin (k+1), w.val=t → w=0 ∨ ∃ j ∈ T.edges, j.succ=w := by
-        intro w
-        refine Fin.cases ?_ (fun j hj => ?_) w
-        · intro _; exact Or.inl rfl
-        · right
-          refine ⟨j,hTc j ?_,rfl⟩
-          have he := H.earlier j
-          simp only [Fin.val_succ] at hj
-          omega
-      exact hall v rfl
-    obtain ⟨B,hB⟩ := T.exists_completionBatch H hTr v hv hM hTb
-    let U := T.fillChildren H v hv B
-    have hold : T.edges ⊆ U.edges := Finset.subset_union_left
-    refine ⟨U,T.fillChildren_ready H hTr v hv B,?_,?_,hTi.trans hold,?_⟩
-    · intro x hx
-      change x ∈ T.S ∪ range B.rank at hx
-      rcases hx with hx | ⟨i,rfl⟩
-      · exact hTb x hx
-      · exact hB i
-    · intro i hi
-      by_cases he : (H.parent i).val < t
-      · exact hold (hTc i he)
-      · have hh : H.parent i=v := Fin.ext (by dsimp [v]; omega)
-        exact T.childBlock_covers H v hv B i hh
-    · intro i hi
-      exact (T.fillChildren_old H v hv B (hTi hi)).trans (hTp i hi)
-
-/-- A prepared partial tree with legal residual parity can be completed on the
-same actual core, preserving its ranks, root, consistency and upper bound. -/
-theorem PartialSeed.completeOrdinarily (P : PartialSeed H) (hready : P.OrdinaryReady H)
-    {M : ℚ} (hM : 0 < M) (hbound : ∀ x ∈ P.S, x ≤ M) :
-    ∃ R : RationalSeed H, (∀ i ∈ P.edges, R.rank i.succ=P.rank i.succ) ∧
-      ∀ v, R.rank v ≤ M := by
-  obtain ⟨T,hTr,hTb,hTc,hTi,hTp⟩ := P.exists_ordinaryStage H hready hM hbound (k+1) le_rfl
-  have hfull : T.edges=Finset.univ := by
-    apply Finset.eq_univ_of_forall
-    intro i
-    exact hTc i (H.parent i).isLt
-  refine ⟨T.finish H hfull,hTp,?_⟩
-  intro v
-  change T.rank v ≤ M
-  refine Fin.cases ?_ (fun i => ?_) v
-  · rw [T.root_zero]; exact hM.le
-  · exact hTb _ (T.assigned i (hTc i (H.parent i).isLt))
-
 /-- Inactive vertices that still have children are low; this is the additional
 invariant allowing marked-child prime insertions only at non-low active parents. -/
 def PartialSeed.InactiveLow (P : PartialSeed H) (δ : ℚ) : Prop :=
@@ -223,7 +140,5 @@ theorem PartialSeed.fillChildren_inactiveLow (P : PartialSeed H) {δ : ℚ}
     exact Or.inr ⟨⟨i,hi⟩,rfl⟩
 
 #print axioms PartialSeed.fillChildren_ready
-#print axioms PartialSeed.exists_completionBatch
-#print axioms PartialSeed.completeOrdinarily
 #print axioms PartialSeed.fillChildren_inactiveLow
 end FixedCore.Next

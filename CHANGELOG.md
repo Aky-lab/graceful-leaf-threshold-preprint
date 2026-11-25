@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2
+
+- Reduced the public Lean package from 271 source modules to 165. The two graph theorems use 163 proof modules. The other two retain the regression examples and the rejecting axiom audit.
+- Used the small-core gracefulness lemma directly for trees of order at most two in the internal-vertex proof. Removed earlier threshold, seed and palette developments outside the revised proof dependencies, and redirected imports in the surviving files. The full earlier development remains available in [v1.1](https://github.com/Aky-lab/graceful-leaf-threshold-preprint/tree/v1.1).
+- Updated the manuscript's source links to this tag. Both graph theorem statements and the numerical bound are unchanged. The release includes the clean-build transcript and per-module proof-dependency counts.
+
 ## v1.1
 
 - Made the degree-seven bound Theorem 1. The manuscript now derives the coefficient from the parity-sensitive completion alternatives and uses it for both effective corollaries.

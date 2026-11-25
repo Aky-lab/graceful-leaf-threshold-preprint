@@ -1,5 +1,11 @@
 import Next.TreeEncodingGraceful
-import Next.PolynomialTheorem
+import Next.PolynomialTwoBankTransport
+import Next.ModularBanksPrepared
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
+import Mathlib.Data.Nat.Prime.Infinite
+import Mathlib.Logic.Equiv.Fin.Rotate
+import Mathlib.Data.Prod.Lex
+import FixedCore.SmallCores
 
 /-! The ordinary part of Theorem 21 on an arbitrary finite mathematical tree,
 with leaves indexed by the actual original vertices rather than a supplied Core. -/
@@ -67,28 +73,6 @@ noncomputable def leafExtensionIso (e : CoreDiameter.graph H ≃g G) (c : V → 
   have hedges := representation_edge_count (leafExtensionIso e c)
   omega
 
-/-- Theorem 21, ordinary assertion: every prescribed leaf distribution on
-any finite tree is graceful above the published explicit polynomial bound. -/
-theorem polynomial_leaf_extension [Fintype V] (hG : G.IsTree) (c : V → ℕ)
-    (n : ℕ) (hn : Fintype.card V≤n)
-    (hN : 10^16*(n+1)^11 ≤ Fintype.card V-1+∑ v,c v) :
-    GraphGraceful (leafExtension G c) := by
-  obtain ⟨k,H,⟨e⟩⟩ := exists_core G hG
-  have hcard := Fintype.card_congr e.toEquiv
-  simp only [Fintype.card_fin] at hcard
-  have htotal : total (fun i => c (e i))=∑ v,c v := Equiv.sum_comp e.toEquiv c
-  apply graphGraceful_of_representation (leafExtensionIso e c)
-  exact PolynomialTheorem.graceful_of_order H _ n (by omega) (by omega)
-
-/-- The same result with the threshold stated using the actual final edge set. -/
-theorem polynomial_leaf_extension_edges [Fintype V] (hG : G.IsTree) (c : V → ℕ)
-    (n : ℕ) (hn : Fintype.card V≤n)
-    (hN : 10^16*(n+1)^11 ≤ Nat.card (leafExtension G c).edgeSet) :
-    GraphGraceful (leafExtension G c) := by
-  rw [leafExtension_edge_count hG c] at hN
-  exact polynomial_leaf_extension hG c n hn hN
-
 #print axioms leafExtensionIso
 #print axioms leafExtension_edge_count
-#print axioms polynomial_leaf_extension
 end FixedCore.TreeEncoding
