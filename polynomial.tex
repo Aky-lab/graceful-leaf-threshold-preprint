@@ -1,0 +1,223 @@
+\section{Steering marked residues}
+In a tree rooted at zero with $s$ nonroot vertices and $\ell$ marked
+nonroot vertices, work modulo an odd integer $q$. We construct distinct
+nonzero vertex classes up to sign which are exactly the edge classes.
+Each marked vertex will have a centered representative of magnitude
+$O((\ell+1)^3(s+1))$, provided $q$ exceeds a sufficiently large absolute
+multiple of that bound.
+
+At the root choose each child as a free seed $y$. At every other vertex
+pair children, leaving at most one singleton. Partition each resulting
+singleton path into triples followed by at most two edges. At input $p$
+use seeds $y,p-y$ for siblings and $y,p-y,p-2y$ along a triple. Their
+differences reproduce the seeds up to sign. Tail edges halve the parent
+modulo $q$. Each occurrence is thus a seed divided by $2^t$, $0\le t\le2$.
+Each seed starts at most one tail. Process a whole triple before the
+families depending on its vertices.
+
+Reserve the signed classes of $z,z/2,z/4$ for every seed $z$, requiring
+its additive order to exceed 16. At any free family fewer than
+$F=2000(s+3)$ parameter residues are forbidden. Indeed a linear
+congruence of nonzero integer coefficient $a$ has at most $|a|$
+solutions modulo $q$. Excluding orders through 16 costs at most
+$3\cdot2\sum_{i=1}^{16}i$. For each old seed and new seed compare their
+ratio formally by testing equality up to factors $\pm 2^j$,
+$-2\le j\le2$, clearing denominators. The coefficient on $y$ has
+magnitude at most 8, costing at most $240s$ across the family.
+Comparisons within a family cost at most $3\cdot10\cdot16$.
+If the coefficient vanishes there, the distinct linear forms in $(y,p)$
+are nonproportional, so the remaining equation is $ap=0$ with
+$0<|a|\le8$, impossible by the order condition. These reservations
+make all used classes distinct.
+
+A mark whose seed is halved $t$ times requests a small integer
+representative of that seed divisible by $2^t$. Process the families
+backwards, merging requests on a seed by taking the maximum exponent.
+One requested output needs no constraint on the input. For at least
+two distinct requested outputs, let $e$ be their second largest
+exponent. Request that $p$ be small and divisible by $2^{e+1}$,
+adding the input's tail length to this exponent at its seed.
+There are at most $\ell-1$ such propagations for $\ell>0$, since each
+replaces at least two active requests by at most one. An active request
+of exponent $E$ represents at least $2^{(E-2)/3}$ original marks,
+disjoint from those of other active requests. This holds initially.
+At a propagation the largest two exponents are at least $e$, and the
+new exponent is at most $e+3$. Pooling the two witness sets gives the
+claim, also when merging with another request. Hence $2^E\le
+4\max(1,\ell)^3$.
+
+Put $W=16(\ell+1)^3(F+2)$. In forward order choose a singly requested
+output itself in $[1,W]$ divisible by its required power of two.
+Its coefficient in $y$ is a unit. With several requests the input
+already has a small representative divisible by $2^{e+1}$. Choose
+$y$ in $[1,W]$ or $[-W,-1]$, on the same side of zero as $p$, divisible by $2^e$, making the most constrained output
+divisible by $2^E$. For $y,p-y$ the congruence is immediate. For
+$p-2y$ use the class of $p/2$ modulo $2^{\max(e,E-1)}$.
+Each case leaves a class modulo at most $2^E$, hence more than $F$
+trials. All other requested outputs satisfy their divisibilities.
+Unconstrained families avoid the original exclusions directly.
+A singly requested output has magnitude at most $W$. At a multiple
+request, if $|p|\le2W$, then $y,p-y,p-2y$ all have magnitude at most
+$2W$ because $y$ has the sign of $p$. Halving a divisible representative
+halves the integer. By induction $2W$ bounds all requested magnitudes,
+and $q>8W+2F$ suffices.
+
+\section{Two large leaf supplies}
+Use the two largest demands as banks. At each remaining site reserve
+one actual leaf for an odd demand or two for an even demand. The
+enlarged core has at most $3n$ vertices. Set $B=10^7(k+2)^3(n+1)$. The modular forest has at most
+$3n$ nonroot vertices and at most $k+1$ marks, so
+$W<10^5(k+2)^3(n+1)$. Choose $P=2q$ maximal with $q$ odd and
+$P\le N-2B-10$. The two banks each have at least $100B$ leaves,
+so $q>8W+2F$, and $2B+10\le N-P<2B+14$. Embed the residues by
+multiplication by $2$ modulo $P$, using representatives in $[1,P-1]$.
+Marked representatives are within $4W<B$ of a bank. The two
+banks will receive ranks $0,P$. The following reductions specify the
+tree to label modulo $q$ and the ranks to restore.
+\begin{itemize}
+\item At distance one contract the bank edge to the root. Restore it
+with length $P$.
+\item At distance at least three write the path as $u,w,z,\ldots,v$.
+Delete $uw$, contract $wz$ to a marked vertex, and identify $u,v$ to
+form the root. The deletion separates the banks, so this quotient is
+a tree. By global negation take the embedded marked residue to be
+$t\in(0,B]$. Give $u,v,z,w$ ranks $0,P,t,P+t$. The two restored
+lengths are $P,P+t$.
+\item At distance two, if the middle $w$ has a spare neighbor $x$,
+give $u,w,v,x$ ranks $0,P+t,P,t$. Their lengths are $P+t,t,P$.
+If $w$ is bare and there is an auxiliary two-edge path $u,x,y$,
+interchange banks if necessary and use $0,P-t,P,P+t,t$ for
+$u,w,v,x,y$. The lengths are $P-t,t,P+t,P$.
+In both cases replace this connected skeleton by one root-to-mark
+edge, attaching outside components at the root for residue zero and
+at the mark for residue $\pm t$. Solve on this tree, steering the
+mark as above. Negate whole outside components attached at residue
+$-t$ to restore their edge classes. If neither distance-two pattern
+is available, the enlarged core is a bare double broom. No secondary
+site is possible there because of its reserved leaves (a secondary
+site on an end leaf would create an auxiliary path). Write its end demands as $A,C$ and label the ends and middle by
+$0,1,C+2$, respectively. Give the leaves at $1$ labels
+$2,\ldots,C+1$, and the leaves at $0$ labels
+$C+3,\ldots,A+C+2$. The differences are exactly
+$1,\ldots,A+C+2$, so this case is graceful directly.
+\end{itemize}
+
+Every secondary rank is within $B$ of zero or $P$, including restored
+skeleton vertices. For ordinary edges, the unsigned residue classes of
+their lengths match the ordinary vertex classes once each. In the last
+two skeletons the abstract root-to-mark edge has been replaced: the
+spare-neighbor pattern supplies ordinary rank and length $t$, and the
+auxiliary pattern supplies both $t,P-t$ as ranks and lengths.
+The special ranks and lengths $P$ and (when present) $P+t$ cancel.
+Any further length above $P$ is $P+d$ with $0<d<t$, incident to the
+unique vertex at $P+t$, and its unsigned class is unique. Give slot
+$P+d$ to a leaf at $P$, supplying length $d$; every other unoccupied
+slot above $P$ goes to zero. Each singly occupied ordinary class now
+has one rank and one length. Give its other rank to zero or $P$ to
+supply the missing length. The augmented tree is consistent, and
+the midpoint $P/2=q$ is unused since it lies outside the subgroup of multiples of $2$ containing the modular core and all repaired ordinary classes. If the remaining demand at
+$P$ is odd, give it that midpoint, supplying its own length.
+
+The repairs spend at most $N-P+3n+1$ bank leaves: there are at most
+$N-P$ high slots, fewer than $3n$ singly occupied ordinary classes,
+and one midpoint. The resulting edge count $s_0$ is $O(B+n)$.
+In fact $s_0\le N-P+6n+1<3B$, so each bank still has at least
+$97B$ leaves available.
+
+\subsection{Two intervals for all secondary sites}
+Write $a,c$ for the residual demands at $0,P$, and $D_H,D_L$ for
+the total even demands of the high and low sites, respectively.
+Put $D=D_H+D_L$ and $s=s_0$, so $N-s=a+c+D$. We show that it
+suffices to have $a\ge N-P+8B+10s+20$ and $c\ge2B+4s+4$, with $c$
+even. Both inequalities follow from the preceding estimates.
+Among the mirror indices $1,\ldots,\lfloor(P-1)/2\rfloor$ reserve
+disjoint consecutive intervals of lengths $D_H/2+2B+s+2$ and
+$D_L/2+B+2s+2$. They fit since $P-2\ge D+6B+6s+8$.
+
+In the high interval visit sites of rank $h$ in decreasing order of
+$d=h-P$. Starting $B$ indices after the first, scan successive $x$
+and put $y=x-d$. Both $x$ and $y$ strictly increase across all trials,
+including changes of site. Accept $x,P-y$ if both ranks are unused,
+moving to the next site once its demand is met. The ranks sum to $h$
+and reproduce their lengths in reverse order. The two halves are
+disjoint, so every rejection uses a different original occupied rank.
+At most $s$ trials fail, and both indices stay within the two margins.
+
+In the low interval provisionally attach all intact mirror pairs to
+$P$. At most $s$ indices are spoiled. Visit low sites in decreasing
+order of $h$, scan $x$ from $B$ indices after the start, and use
+$y=x-h$. Accept when $x,y$ both index originally intact pairs. Each
+spoiled index can reject once as $x$ and once as $y$, so the interval
+suffices. Transfer the slots $x,P-y$ to $h$. Their old lengths $P-x,y$
+are exchanged. Separate transfers can use opposite members of one
+mirror pair: strict increase of both index sequences ensures that
+no individual slot moves twice. At most $2B+4s+4$ provisional leaves
+remain at $P$, an even number. This provisional assignment describes
+only the final parents and requires no extra target vertices.
+
+Outside the intervals, intact pairs contain at least
+$P-2-D-6B-8s-8\ge c$ slots by the bound on $a$. Fill the outstanding
+even demand at $P$ there, and give the complement to zero. This proves
+the two-supply assertion without a loss per secondary site.
+
+\section{A rooted labeling of polynomial span}
+For a rooted tree on $s\ge2$ vertices we construct consistent integer
+ranks of maximum $M\le160000s^{11}$ and minimum positive rank at
+least $M/(200s^6)$. Set $D=10000s^2$. At zero give its children
+distinct integer ranks in $[Ds^6,2Ds^6]$ in distinct dyadic orbits
+(ratios within an orbit are powers of two). Follow a largest child
+at every vertex to form heavy paths. A light child in a subtree of
+size $S$ has subtree size at most $S/2$.
+
+At a path head of subtree size $S$ start with rank at least $DS^6$.
+Use triples along the path, leaving at most two tail edges. From $p$
+the triple uses $t,p-t,p-2t$ in that order, where
+$4DJ^6\le t\le5DJ^6$ is integral and $J$ is the largest light subtree
+size at the first new vertex, or one if none exists. The sets charged
+by these $J$ are disjoint (charge the vertex itself when necessary),
+so $\sum J\le S$ and $J\le S/2$ whenever a triple occurs.
+The total boundary decrease is at most
+$10D(S/2)^5S<DS^6/3$. Thus boundary and middle ranks exceed
+$2DS^6/3$ and $t<p/3$. At each path vertex group its remaining children
+in pairs and at most one singleton, including its heavy child if still
+unassigned in the tail. At rank $z$ use $y,z-y$ with integral
+$z/3\le y<z/2$, and $z/2$ for a singleton. Process the tail from
+its top. Each light child of the low vertex at rank $t$ gets at least
+$t/3\ge DJ^6$. Elsewhere at most two tail steps and one side step
+lose a factor of at most 27 from $2DS^6/3$, leaving more than
+$D(S/2)^6$. The head bound therefore holds at each recursive light
+child. The ranks stay below the original head maximum and all positive
+ranks are at least $D/100$.
+
+At free choices avoid all earlier dyadic orbits and coincidences among
+the new orbits. Over the trial interval each triple expression varies
+by a factor less than two and any two have a strictly monotone ratio
+varying by a factor less than four. This follows from $p>3\max t$ and
+the displayed bounds on $t$. The sibling expressions satisfy the same
+bounds. Thus at most two trials per expression and old rank, and at
+most three per pair of new expressions, are forbidden. The triple
+interval contains at least $D$ integers. At a sibling pair the parent
+has $z\ge 4D$ or $z\ge(2/3)DS^6/9$, so the interval of width $z/6$
+also suffices. In each fresh orbit forced singleton halves form only
+one descending chain. The packets reproduce their ranks as differences.
+Along a root path only singleton halves introduce denominators, at most
+three per heavy segment, and the light steps halve subtree size.
+Clearing denominators costs at most $2^{3(1+\lfloor\log_2s\rfloor)}
+\le8s^3$. This gives the stated maximum and preserves the minimum ratio.
+
+\section{Completion with one large supply}
+Root at a largest site. If the second-demand hypothesis fails, the
+total $L$ of secondary leaves is at most $8\cdot10^9(n+1)^5$ since $k\le n$.
+This includes $k=1$ with $L=0$; zero demand is vacuous above the
+threshold. Reserve one leaf at each odd secondary site. The rooted
+core now has $s\le2n$ vertices. The singleton case is a star.
+Otherwise scale the preceding integer ranks by $\lfloor N/M\rfloor$.
+For $N\ge2M$ each secondary rank $p$ is at least $N/(400s^6)$.
+The candidate pairs $\{x,p-x\}$ strictly below $p$ cover at least
+$p-2$ slots. Previously occupied ranks spoil at most $2(s+L)$ slots.
+Hence $p>4(s+L)+10$ suffices to install the even residual demand
+at each secondary site in turn. Fill all remaining slots at zero.
+For $N\ge10^{16}(n+1)^{11}$, the bounds $M\le160000s^{11}$ and
+$s\le2n$ give $N\ge2M$. Also $400s^6(4(s+L)+10)<N$ by the displayed
+bound on $L$. The assigned pairs and remaining root slots are leaves. This completes
+the proof of Theorem~\ref{poly}.

@@ -1,0 +1,475 @@
+name = "fixedCore"
+version = "0.1.0"
+defaultTargets = ["FixedCoreAll"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "v4.30.0"
+
+[[lean_lib]]
+name = "FixedCore"
+
+[[lean_lib]]
+name = "FixedCoreAll"
+
+
+[[lean_lib]]
+name = "Next"
+
+# The existing unnamespaced many-branch proof modules are a non-default target.
+[[lean_lib]]
+name = "ManyBranchSupport"
+roots = [
+  "BalancedPalette",
+  "BranchDefect",
+  "BranchExactRuns",
+  "BranchFinAPI",
+  "BranchFullPalette",
+  "BranchMultiset",
+  "BranchOrder",
+  "BranchPalette",
+  "BranchStage",
+  "BranchSuffix",
+  "BranchTelescope",
+  "BranchedPreparation",
+  "CanonicalOrbitBinding",
+  "ExactSwapDefect",
+  "ManyBranchActive",
+  "ManyBranchActualCore",
+  "ManyBranchCanonical",
+  "ManyBranchCanonicalActual",
+  "ManyBranchCardinality",
+  "ManyBranchColors",
+  "ManyBranchDefects",
+  "ManyBranchEnumeration",
+  "ManyBranchFinish",
+  "ManyBranchFixed",
+  "ManyBranchGraph",
+  "ManyBranchLabels",
+  "ManyBranchNamedPreparation",
+  "ManyBranchNamedValidity",
+  "ManyBranchPalette",
+  "ManyBranchRepairGlue",
+  "ManyBranchRoute",
+  "ManyBranchSequence",
+  "ManyBranchSourceBijection",
+  "ManyBranchSourcePalette",
+  "ManyBranchSourceVertices",
+  "ManyBranchTheorem48",
+  "ManyBranchTree",
+  "OneSplitClassification",
+  "OneSplitMoves",
+  "OneSplitPreparation",
+  "OneSplitRealization",
+  "ReflectionPairEquiv",
+]
+
+# Independently build the existing root-level boundary-lowering proof corpus.
+[[lean_lib]]
+name = "BoundaryLoweringSupport"
+roots = [
+  "ArbitraryRankTerminalArithmetic",
+  "ArithmeticBlockShift",
+  "ArithmeticMultiBlock",
+  "BipartitePreliminaryExtension",
+  "BoundaryFamilyActual",
+  "BoundaryFamilyModel",
+  "BoundaryFamilyPalettes",
+  "BoundaryFamilySupport",
+  "BoundaryFamilyTree",
+  "BoundaryHubActual",
+  "BoundaryHubBounded",
+  "BoundaryHubCertificate",
+  "BoundaryHubCounterOrder",
+  "BoundaryHubDefect",
+  "BoundaryHubFirstDefect",
+  "BoundaryHubLabels",
+  "BoundaryHubPalette",
+  "BoundaryHubRepair",
+  "BoundaryHubSupport",
+  "BoundaryHubSupportSequence",
+  "BoundaryHubTrace",
+  "BoundaryHubTransfer",
+  "GracefulAt",
+  "HubNoReturn",
+  "PaletteGraphTree",
+  "PreparedHubExcess",
+  "PreparedOccurrenceBridge",
+  "TerminalLabeledExtension",
+  "TerminalListPalettes",
+  "TerminalPacketInsertion",
+]
+
+# Theorem 21 root modules; shared dependencies remain owned by BoundaryLoweringSupport.
+[[lean_lib]]
+name = "DoubleStarGapSupport"
+roots = [
+  "ActualForwardSurvival",
+  "BipartiteCentral",
+  "BipartiteConcatenation",
+  "CanonicalForwardSurvival",
+  "CanonicalPendant",
+  "CanonicalTarget",
+  "ComplementNormalization",
+  "DoubleStarAllocation",
+  "DoubleStarFlip",
+  "DoubleStarHalveArithmetic",
+  "DoubleStarHalveStep",
+  "DoubleStarLeafSets",
+  "DoubleStarModel",
+  "DoubleStarMoveArithmetic",
+  "DoubleStarNormalizedPreparation",
+  "DoubleStarOddPreparation",
+  "DoubleStarPairExchange",
+  "DoubleStarPalette",
+  "DoubleStarPreparationTransport",
+  "DoubleStarProperMoves",
+  "DoubleStarReallocate",
+  "DoubleStarReflection",
+  "DoubleStarSingleActual",
+  "DoubleStarSingleGraceful",
+  "DoubleStarSinglePalette",
+  "DoubleStarSinglePreparation",
+  "DoubleStarTerminalGaps",
+  "DoubleStarTheorem42",
+  "DoubleStarTopology",
+  "DoubleStarTrace",
+  "DoubleStarTraceCompose",
+  "DoubleStarZeroHubPreparation",
+  "EvenDefect",
+  "EvenEndpoint",
+  "EvenLowering",
+  "EvenPreparation",
+  "EvenTerminalGap",
+  "ExactTerminalCanonicalIso",
+  "FixedCoreGapEndpoints",
+  "FixedCoreGapExistence",
+  "FixedCoreGapFiveVertex",
+  "FixedCoreGapNegative",
+  "FixedCoreRemainingEquiv",
+  "FixedLabelPresentation",
+  "ForwardCutSurvival",
+  "LeafAdditionTree",
+  "NamedPendantAdjacency",
+  "NamedPendantTree",
+  "OrderedPathCoordinates",
+  "PreliminaryCanonicalIso",
+  "PreliminaryTopology",
+  "RecursivePendantAdjacency",
+  "RecursivePendantTree",
+  "ReflectedForwardSurvival",
+  "ReflectionPairParity",
+  "ReflectionPairProgress",
+  "ShortOddActual",
+  "ShortOddGeometry",
+  "ShortOddPalette",
+  "ShortOddPorts",
+  "ShortOddSharpConstruction",
+  "ShortOddTree",
+  "SiblingGraceful",
+  "TerminalExactTree",
+  "TerminalGraphCardinality",
+  "TerminalNamedConnectivity",
+  "TerminalNamedGraph",
+  "TerminalNamedPalettes",
+]
+
+# Existing pinned root-level modules; leave defaultTargets unchanged.
+[[lean_lib]]
+name = "GracefulSourceGapTrapSupport"
+roots = [
+  "TrapCardinality",
+  "TrapClosure",
+  "TrapCore",
+  "TrapFinite",
+  "TrapGap_false_1",
+  "TrapGap_false_10",
+  "TrapGap_false_5",
+  "TrapGap_false_6",
+  "TrapGap_true_1",
+  "TrapGap_true_10",
+  "TrapGap_true_5",
+  "TrapGap_true_6",
+  "TrapGraph",
+  "TrapMinimum",
+  "TrapOrbit",
+  "TrapReach",
+  "TrapShape",
+  "TrapShapeTransfer",
+  "TrapSwapMinimum",
+  "TrapSwapReach",
+  "TrapSwap_false_0",
+  "TrapSwap_false_1",
+  "TrapSwap_false_10",
+  "TrapSwap_false_11",
+  "TrapSwap_false_2",
+  "TrapSwap_false_3",
+  "TrapSwap_false_4",
+  "TrapSwap_false_5",
+  "TrapSwap_false_6",
+  "TrapSwap_false_7",
+  "TrapSwap_false_8",
+  "TrapSwap_false_9",
+  "TrapSwap_true_0",
+  "TrapSwap_true_1",
+  "TrapSwap_true_10",
+  "TrapSwap_true_11",
+  "TrapSwap_true_2",
+  "TrapSwap_true_3",
+  "TrapSwap_true_4",
+  "TrapSwap_true_5",
+  "TrapSwap_true_6",
+  "TrapSwap_true_7",
+  "TrapSwap_true_8",
+  "TrapSwap_true_9",
+  "TrapSymmetry",
+  "TrapTheorem",
+  "TrapWitness",
+]
+
+# Companion Theorem 19 root modules; shared namespace and terminal modules retain their owners.
+[[lean_lib]]
+name = "OddBalancedThresholdSupport"
+roots = [
+  "ActualBothBelowLeafBelow",
+  "ActualCompression",
+  "ActualConstruction",
+  "ActualNormalizedOddLower",
+  "ActualOddLowerHelpers",
+  "ActualProjection",
+  "ActualSpectrum",
+  "BalanceColorPaths",
+  "BalancedUpperActual",
+  "BalancedUpperGraphBridge",
+  "BothBelowUpperLeaf",
+  "BoundedGraphExtraction",
+  "CanonicalGraphExtraction",
+  "CanonicalLeafSwap",
+  "CompressionSuffix",
+  "CrossParentLeafSwap",
+  "FunctionalColorFlow",
+  "NormalizedGraceful",
+  "NormalizedRootPalette",
+  "NormalizedWitness",
+  "OddBalancedCaseCounts",
+  "OddBalancedCounts",
+  "OddBalancedExtremes",
+  "OddBalancedFourCut",
+  "OddBalancedHubFlip",
+  "OddBalancedNormalization",
+  "OddBalancedParity",
+  "OddBalancedSums",
+  "OddBalancedTheorem40",
+  "OddBalancedWitness",
+  "OddExactClosing",
+  "OddExteriorClosure",
+  "OddLowerArithmetic",
+  "OddLowerBalance",
+  "OddLowerCaseIIPaths",
+  "OddLowerCaseIIResidual",
+  "OppositeHubCase",
+  "PacketGapAdmission",
+  "PacketGapCrossing",
+  "PacketGapInheritance",
+  "PacketGapModel",
+  "PacketGapPalette",
+  "PacketGapUsable",
+  "PendantCompression",
+  "RankArithmetic",
+  "ReflectionCycleCount",
+  "ReflectionSelection",
+  "ReflectionSlots",
+  "RepeatedColorReplacement",
+  "ResidualInvariant",
+  "SpectrumSlots",
+  "TerminalLeafGraph",
+  "TerminalLeafTransport",
+  "TerminalLeafTree",
+  "TerminalZeroActualSpectrum",
+  "TerminalZeroArithmetic",
+  "ThresholdOneAllocation",
+  "ThresholdOneBelowImpossible",
+  "ThresholdOneImpossible",
+  "ThresholdOneNormalize",
+  "ThresholdOneNormalized",
+  "ThresholdOneRainbow",
+  "TwoHubGraph",
+  "TwoHubLabelTransport",
+  "TwoHubRoot",
+  "TwoHubSymmetry",
+]
+
+# Companion Theorem 17; shared namespace and support modules retain their owners.
+[[lean_lib]]
+name = "ZeroFixedCycleSupport"
+roots = [
+  "ColorPathExtraction",
+  "Theorem38",
+  "ZeroFixedActualPalette",
+  "ZeroFixedColorArithmetic",
+  "ZeroFixedFactorization",
+  "ZeroFixedPaletteCancellation",
+  "ZeroFixedReflectionRegression",
+  "ZeroFixedSpokeSplit",
+]
+
+# Companion Theorem 16 fixed trap and symbolic repair family.
+[[lean_lib]]
+name = "ArbitraryShortTrapSupport"
+roots = [
+  "Complement",
+  "ComplementPaths",
+  "FamilyPalette",
+  "FamilyRepair",
+  "FamilyTrace",
+  "FamilyTraceSupport",
+  "FamilyTree",
+  "FamilyTreeRepair",
+  "FamilyValidity",
+  "FiniteTrap",
+  "LeafDeletion",
+  "NamedTrap",
+  "NamedTrapCore",
+  "NamedTrapEscape",
+  "NamedTrapPath",
+  "NamedTrapRow0",
+  "NamedTrapRow1",
+  "NamedTrapRow2",
+  "NamedTrapRow3",
+  "NamedTrapRow4",
+  "NamedTrapTree",
+  "OrbitCore",
+]
+
+# Companion Theorem 15; shared namespace and support modules retain their owners.
+[[lean_lib]]
+name = "ThreeCoreSafeSwapSupport"
+roots = [
+  "APFullArithmetic",
+  "APLeafCardinality",
+  "ActualCoreGap",
+  "DefectOneCorePacket",
+  "DefectOneCoreReduction",
+  "DefectOnePalette",
+  "DefectTreePalette",
+  "EndpointLeafCardinality",
+  "LabelCoordinateClosure",
+  "LeafReplacementConditions",
+  "MiddleLeafCardinality",
+  "MiddleZeroLeafExclusion",
+  "OtherParentLeaf",
+  "SmallLeafExclusions",
+  "StarFirstSwap",
+  "Theorem36",
+  "Theorem36Fin",
+  "ThreeCoreAPArithmetic",
+  "ThreeCorePath",
+  "ThreeCorePrivateLeafComposition",
+  "TwoEdgeLeafExclusion",
+]
+
+# Companion Theorem 14; shared namespace and support modules retain their owners.
+[[lean_lib]]
+name = "GreedyReachableTargetSupport"
+roots = [
+  "GreedyCandidateDefect",
+  "GreedyCandidatePalettes",
+  "GreedyCertificate",
+  "GreedyDistance",
+  "GreedyFamilyCandidates",
+  "GreedyFamilyDefect",
+  "GreedyFamilyDescent",
+  "GreedyFamilyDistance",
+  "GreedyFamilyGraphPalette",
+  "GreedyFamilyMismatch",
+  "GreedyFamilyObstruction",
+  "GreedyFamilyPalettes",
+  "GreedyFamilyTail",
+  "GreedyFamilyTrace",
+  "GreedyFamilyTree",
+  "GreedyFamilyUnrestricted",
+  "GreedyRepresentative",
+  "GreedyTree",
+  "Theorem35Actual",
+  "TwoCorrectionCount",
+]
+
+# Companion Theorem 13 namespaced proof closure.
+[[lean_lib]]
+name = "Theorem34IsolatedAllocations"
+roots = [
+  "Theorem34IsolatedAllocations.Isolation",
+  "Theorem34IsolatedAllocations.LeafIdentification",
+  "Theorem34IsolatedAllocations.Repair",
+  "Theorem34IsolatedAllocations.SiblingSwap",
+  "Theorem34IsolatedAllocations.SwapCensus",
+  "Theorem34IsolatedAllocations.T34Actual",
+  "Theorem34IsolatedAllocations.T34Transport",
+  "Theorem34IsolatedAllocations.T34Tree",
+  "Theorem34IsolatedAllocations.Theorem34",
+]
+
+# Companion Corollary 12 archive and literal spectrum import shim.
+[[lean_lib]]
+name = "ZeroRootPacketDivisibilitySupport"
+needs = ["+Next.PacketDivisibilityEvenDegree:olean", "+Next.PacketDivisibilitySmallSource:olean"]
+roots = [
+  "Theorem32RootSpectrum.ActualSpectrum",
+  "Theorem33PacketDivisibility.Corollary33",
+  "Theorem33PacketDivisibility.PacketCounts",
+  "Theorem33PacketDivisibility.PacketDivisibilityActual",
+  "Theorem33PacketDivisibility.PacketFiniteEmbedding",
+  "Theorem33PacketDivisibility.PacketNormalizedData",
+  "Theorem33PacketDivisibility.PacketOrders",
+  "Theorem33PacketDivisibility.PacketScaling",
+  "Theorem33PacketDivisibility.PacketSource",
+  "Theorem33PacketDivisibility.PacketTopology",
+  "Theorem33PacketDivisibility.PacketTransport",
+]
+
+# Companion Corollary 10; add only the new archive roots.
+[[lean_lib]]
+name = "TerminalCounterexampleSupport"
+roots = [
+  "BipartiteEndpointExistence",
+  "BipartiteEndpointReduction",
+  "BipartiteReflection",
+  "CanonicalConcatenation",
+  "CanonicalCounterexample",
+  "CanonicalPacket",
+  "CanonicalTransport",
+  "CompositeCanonicalIso",
+  "GracefulPresentation",
+  "LongOddArithmetic",
+  "LongOddConstruction",
+  "LongOddPreliminary",
+  "NamedGracefulExtraction",
+  "PreliminaryEnumeration",
+  "PreliminaryNamedPalettes",
+  "RetainFirstIso",
+  "SufficientEvenNamedTree",
+  "TerminalCutoffs",
+  "TerminalEquivTransport",
+  "TerminalTargetTransfer",
+]
+
+# Companion Theorem 9; add only the new archive roots.
+[[lean_lib]]
+name = "TerminalUsableTipSupport"
+roots = [
+  "ActualShortPathLower",
+  "IndependentPackets",
+  "LongOddTip",
+  "MirroredPackets",
+  "NamedPathPackets",
+  "PacketCutArithmetic",
+  "PacketCutEvolution",
+  "PacketCutLiteral",
+  "PathPacketIndependence",
+  "ShortOddPackets",
+  "ShortOddSurvival",
+  "ShortPathIndices",
+  "ShortPathLower",
+  "ShortPathPaletteLower",
+]
