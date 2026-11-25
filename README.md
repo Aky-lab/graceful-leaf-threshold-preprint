@@ -8,6 +8,8 @@ Superdock (2014), [Corollary 5.10](https://arxiv.org/abs/1403.1564), treats arbi
 
 AI assistance was substantive: research agents developed labeling constructions and quantitative bounds, Dot produced Lean formalizations, and Codex maintained the manuscripts, reviewed statements, and replayed computational checks. This is a working preprint.
 
+The maintainer completed a fresh end-to-end Lean build of this public source on 25 November 2026. Lake reported 3,246 successful build jobs, including cached dependencies. Both graph theorems passed the axiom audit. [Build transcript](https://github.com/Aky-lab/graceful-leaf-threshold-preprint/releases/download/v1.1/lean-build.log).
+
 ## Verify the degree-seven bound
 
 Install Git and [Elan](https://github.com/leanprover/elan), then run these commands. Elan selects Lean 4.30.0 from the checked-in toolchain file. Lake reads the pinned dependency revisions from the manifest.

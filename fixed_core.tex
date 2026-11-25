@@ -37,6 +37,8 @@ is graceful.
 \end{theorem}
 The hypothesis uses the number of vertices before attachment and the number
 of edges after attachment. It allows all new leaves at a single vertex.
+In particular, a counterexample with $N$ edges must have more than
+$(N/3{,}955{,}201)^{1/7}$ internal vertices (Corollary~\ref{internalorder}).
 The general Graceful Tree Conjecture remains open.
 
 Superdock proved eventual gracefulness with all new leaves at a single
@@ -116,13 +118,122 @@ then complete the demand at the root $u$. This gives a labeling of the
 entire prescribed extension.
 \end{proof}
 
-For example, consider the six-vertex path $0,1,2,3,4$ with an extra
-leaf $5$ at vertex $1$. Prescribe respectively $24{,}209$, $24{,}209$,
+For example, form a six-vertex tree from the path $0,1,2,3,4$ by attaching
+a leaf $5$ at vertex $1$. Prescribe respectively $24{,}209$, $24{,}209$,
 and one new leaf at $0,4,5$. With $u=0$ we have $q=3$ and $o=2$.
 The threshold at each of $0$ and $4$ is $24{,}208$, so the first case
 already constructs the target. Ignoring the two off-root parity bits
 would give a threshold of $29{,}008$. This example is included in the
 \proofmodule{ParityPacketRegression}{checked regression examples}.
+
+\subsection{How to place two large supplies}
+The difficulty is to realize many prescribed parent vertices without using
+a separate interval of labels for each. Give the two large sites ranks
+$0$ and $P=2Q$. First work modulo $Q$, identifying a residue with its
+negative. A sibling pair at input $p$ receives $y,p-y$. On a chain of
+three edges the successive ranks $y,p-y,p-2y$ give differences, up to
+sign, $p-y,p-2y,y$. A remaining single edge can halve the input.
+Each operation thus reproduces its new ranks as edge classes. Free
+choices of $y$ keep classes from different operations distinct.
+
+The distinguished vertices are the secondary sites and, when needed,
+one vertex used to restore the path between the two large sites.
+There are at most $m=q-1$ marks. A small centered representative of
+a marked residue gives an even label near $0$ or $P$ on lifting by
+multiplication by two. The reason for imposing divisibility during
+the modular construction is that halving an even small integer keeps
+it small; halving an arbitrary residue modulo $Q$ can put it halfway
+across the interval.
+
+Here is the count behind the threshold $T$. Propagate powers of two
+required by the marks backwards through the operations. On the forward
+pass a request of exponent $e$ restricts a trial to a progression
+with step at most $2^e$. The \proofmodule{ModularChargedLocalBound}{marked
+construction} associates $w$ witnessing marks to the request, with
+$2^e\le4w^2$. If there are $a$ previously used seeds, their indices
+are disjoint from those witnesses, so $a+w\le j$. Choose $Q$ coprime
+to $30030$. Avoiding old unsigned classes and coincidences in the
+new operation excludes at most $30a+23$ trials
+(\proofmodule{ModularCoprimeRatios}{residue exclusion count}).
+For $W=2m^2(30j+25-30m)$ the interval budget is sufficient because
+\[
+ 2^e(30a+25)\le4w^2(30j+25-30w)
+             \le4m^2(30j+25-30m)=2W .
+\]
+The second inequality uses $w\le m$ and $45m\le30j+25$, under which
+the cubic is increasing. With margin $B=4W$ the palette construction
+chooses $Q>4W$ and $B\le N-P<B+60$. Both supplies of size
+$5B+36m^2(n+1)=T$ suffice for the lift and its completion.
+
+To see how two distinct sites can originate at residue zero, consider
+the path from $u$ to $v$. For adjacent sites contract their edge, then
+restore it with length $P$. For distance at least three write the path
+as $u,w,z,\ldots,v$. Delete $uw$, contract $wz$ to a mark and identify
+$u,v$ as the root. The deletion separates the two banks, so the quotient
+is a tree. Orient its marked residue to give a small positive lift $t$.
+Assign $u,v,z,w$ the ranks $0,P,t,P+t$; the two restored edges have
+lengths $P+t,P$. At distance two, a spare neighbor of the middle vertex
+provides the same four ranks. If the middle vertex has no spare neighbor,
+a two-edge side path from either end provides the five ranks
+$0,P-t,P,P+t,t$ on the bank path and the side path, respectively.
+The special lengths are then $P-t,t,P+t,P$. The
+\proofmodule{ParityPacketTwoBank}{path restoration} checks both orientations.
+
+If neither distance-two repair applies, the tree consists of a path on
+three vertices with leaves at its ends. Write $a,c$ for the numbers of
+leaves there. Give the two ends ranks $0,1$ and the middle rank $c+2$.
+Use $2,\ldots,c+1$ at the end labeled $1$ and $c+3,\ldots,a+c+2$ at
+the end labeled $0$. The first group gives lengths $1,\ldots,c$, the
+middle edges give $c+1,c+2$, and the second group gives the remaining
+lengths. This settles the exceptional shape directly.
+
+For the ordinary lift, an unused member of a mirror pair
+$\{x,P-x\}$ can be placed at $0$ or $P$ to supply either of the
+two lengths. After repairing the singly occupied mirror classes,
+the remaining secondary demands are even. For a high secondary rank
+$p=P+d$, choose slots $x,P-y$ with $y=x-d$; their sum is $p$.
+For a low rank $p$, begin with slots provisionally at $P$ and take
+$y=x-p$. Moving $x,P-y$ to $p$ exchanges their lengths $P-x,y$.
+In each of two disjoint intervals visit the sites in decreasing order
+of offset, scanning $x$ upwards. Both $x$ and $y$ increase, so an
+occupied slot spoils at most one trial in each role over the entire
+scan. This is why the cost of the used labels is paid once across the
+secondary sites. The two large sites absorb the remaining slots.
+
+\subsection{How to complete one large supply}
+For the other construction root the prepared tree at $u$. A useful
+seed needs both a small maximum $M$ and a lower bound on its positive
+ranks, since a site of rank $p$ has only $\lfloor(p-1)/2\rfloor$
+distinct pairs $\{x,p-x\}$ available below it. The
+\proofmodule{SparseHeavySeed}{rooted seed construction} obtains
+\[
+ M\le A(S),\qquad M\le R p\quad(p>0),\qquad R=200S^3 .
+\]
+Here is how the two estimates arise. At each vertex follow a child of
+largest subtree size. Moving into any other child's subtree at least
+halves the size, so a root path takes at most $h\le\log_2 S$ such
+steps. Work first with rational ranks, using reflected sibling pairs
+and triples along the selected paths. Free integer choices avoid
+earlier ranks and their relevant doubles and halves. The
+\proofmodule{SparseChoiceScale}{choice scale} is
+$D=512S(9+3\lceil\log_2 S\rceil)$. The construction maintains the
+range $[D/100,2DS^3]$ for positive ranks. Their ratio is at most
+$200S^3$. In the \proofmodule{SparseHeavySeed}{denominator estimate},
+at most two bits per level are needed, so multiplication by
+$2^{2(h+1)}\le4S^2$ gives integer ranks. Multiplying the upper end
+of the range by $4S^2$ gives exactly $A(S)$ as an upper bound.
+
+For a prepared core of order at least two, dilate the seed by
+$K=\lfloor N/M\rfloor$. Since $N\ge M+R(2(S-1)+2L+1)$, we have
+$KM>N-M$ and hence $Kp\ge2(S-1)+2L+1$ for each positive rank.
+At a site of scaled rank $Kp$, distinct candidate pairs are disjoint.
+Each occupied positive rank invalidates at most one candidate there.
+If the site still needs $2b$ leaves, at most $S-1+L-2b$ ranks have
+been occupied by the seed and earlier secondary allocations. There
+are at least $S-1+L$ candidates, so one can select $b$ intact pairs.
+Each pair exchanges its labels as differences; assigning all remaining
+slots to the root completes the labeling. A singleton prepared core
+gives a star directly.
 
 \section{The uniform estimate}
 \begin{proof}[Proof of Theorem~\ref{poly}]
