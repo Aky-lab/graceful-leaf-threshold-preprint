@@ -35,14 +35,17 @@ $H(\mathbf a)$ with final edge count
 is graceful. Moreover, if $k\ge2$ sites have nonzero demand, it suffices
 that the second largest demand be at least $10^9(k+2)^3(n+1)$.
 \end{theorem}
-The \href{https://github.com/Aky-lab/graceful-leaf-threshold-preprint/blob/v1/poly-parity-coupled-packets-20261125.md}{formal refinement} gives the stronger sufficient bound
+The \href{https://github.com/Aky-lab/graceful-leaf-threshold-preprint/blob/v1.1/poly-parity-coupled-packets-20261125.md}{formal refinement} gives the stronger sufficient bound
 \[
  N\ge 3{,}955{,}201 n^7.
 \]
 It charges at most two denominator bits per light level of the rooted
 construction and couples the parity reserves in the two completion cases.
 The graph-level statement and proof are in
-\href{https://github.com/Aky-lab/graceful-leaf-threshold-preprint/blob/v1/lean/Next/TreeEncodingPolynomialParityPacket.lean}{the accompanying Lean development}.
+\href{https://github.com/Aky-lab/graceful-leaf-threshold-preprint/blob/v1.1/lean/Next/TreeEncodingPolynomialParityPacket.lean}{the accompanying Lean development}. From the release's \texttt{lean/} directory,
+run \texttt{lake exe cache get} and then \texttt{lake build}. The default
+target checks both graph statements and audits their axiom dependencies.
+The \href{https://github.com/Aky-lab/graceful-leaf-threshold-preprint/tree/v1.1}{tagged release} pins Lean and Mathlib.
 The elementary proof below establishes the displayed degree-eleven theorem. In particular, the theorem
 allows all new leaves at one vertex, arbitrary uneven distributions,
 and cores with unbounded diameter, degree, or number of leaves.
@@ -119,6 +122,11 @@ adjacent to it. Apply Theorem~\ref{poly} to that core. For bounded $h$
 only finitely many trees remain below the displayed edge bound.
 \end{proof}
 \end{samepage}
+
+Applying the formal degree-seven bound to the internal subtree sharpens the
+necessary inequality to $N<3{,}955{,}201 h^7$, hence
+$h>(N/3{,}955{,}201)^{1/7}$. This is the second graph statement
+checked by the release build.
 
 The same ideas admit refinements under bounded leaf count or diameter,
 and constraints on internal-label divisibility. Those refinements,
