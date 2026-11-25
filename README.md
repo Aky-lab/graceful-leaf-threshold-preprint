@@ -2,7 +2,7 @@
 
 Working preprint from Aky-lab, 25 November 2026. [Read the paper](fixed_core.pdf).
 
-For every tree on n vertices and every prescribed distribution of new leaves among its vertices, a final edge count of at least 3,955,201 n^7 suffices for gracefulness. The PDF gives an elementary proof with a degree-eleven bound. The stronger bound is stated for the actual finite graph in [the Lean proof](lean/Next/TreeEncodingPolynomialParityPacket.lean).
+For every tree on n vertices and every prescribed distribution of new leaves among its vertices, a final edge count of at least 3,955,201 n^7 suffices for gracefulness. The paper derives this bound from two labeling constructions and a common parity count. Both the prescribed-extension theorem and its internal-vertex corollary are formalized [for finite graphs in Lean](lean/Next/TreeEncodingPolynomialParityPacket.lean).
 
 Superdock (2014), [Corollary 5.10](https://arxiv.org/abs/1403.1564), treats arbitrarily many leaves at one prescribed vertex of a fixed tree. [Lapierre and McGuinness](https://faculty.tru.ca/smcguinness/graceful5.pdf) give attachment constructions with additional labeling and attachment hypotheses. The theorem here quantifies over all distributions and uses only the original tree order in the cutoff. We have not identified an earlier publication explicitly posing this precise quantitative question. The general Graceful Tree Conjecture remains open.
 

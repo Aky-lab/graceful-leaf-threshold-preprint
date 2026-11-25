@@ -7,6 +7,7 @@
 \newtheorem{corollary}[theorem]{Corollary}
 \title{Polynomial thresholds for graceful leaf extensions of arbitrary trees}
 \author{Aky-lab}\date{Working preprint, 25 November 2026}
+\newcommand{\proofmodule}[2]{\href{https://github.com/Aky-lab/graceful-leaf-threshold-preprint/blob/v1.1/lean/Next/#1.lean}{#2}}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -14,10 +15,10 @@ Let $H$ be any tree on $n$ vertices, and attach new leaves at its vertices
 in any prescribed numbers. The resulting tree is graceful whenever its
 final edge count is at least $3{,}955{,}201 n^7$. No graceful labeling of
 $H$ is assumed, and no positive lower bound is required at an individual
-attachment site. The elementary degree-eleven bound below is proved by steering marked residues when
-two sites carry large supplies, and by constructing a rooted labeling
-of polynomial span when one supply dominates. The proof gives an
-explicit computable upper bound for the least fixed-core threshold.
+attachment site. The proof uses the parities of the same prescribed leaf counts to
+control two competing constructions. For a tree with $h$ internal
+vertices the resulting sufficient edge bound is $3{,}955{,}201h^7$.
+The construction lemmas and the uniform estimate are formalized in Lean.
 \end{abstract}
 \section{The threshold theorem}
 A tree with $N$ edges is \emph{graceful} if it admits a bijection from
@@ -30,27 +31,13 @@ vertices; the construction must realize the entire prescribed target.
 Let $H$ be a tree on $n\ge1$ vertices. Every prescribed leaf extension
 $H(\mathbf a)$ with final edge count
 \[
- N=n-1+\sum_{v\in V(H)}a_v\ \ge\ 10^{16}(n+1)^{11}
+ N=n-1+\sum_{v\in V(H)}a_v\ \ge\ 3{,}955{,}201n^7
 \]
-is graceful. Moreover, if $k\ge2$ sites have nonzero demand, it suffices
-that the second largest demand be at least $10^9(k+2)^3(n+1)$.
+is graceful.
 \end{theorem}
-The \href{https://github.com/Aky-lab/graceful-leaf-threshold-preprint/blob/v1.1/poly-parity-coupled-packets-20261125.md}{formal refinement} gives the stronger sufficient bound
-\[
- N\ge 3{,}955{,}201 n^7.
-\]
-It charges at most two denominator bits per light level of the rooted
-construction and couples the parity reserves in the two completion cases.
-The graph-level statement and proof are in
-\href{https://github.com/Aky-lab/graceful-leaf-threshold-preprint/blob/v1.1/lean/Next/TreeEncodingPolynomialParityPacket.lean}{the accompanying Lean development}. From the release's \texttt{lean/} directory,
-run \texttt{lake exe cache get} and then \texttt{lake build}. The default
-target checks both graph statements and audits their axiom dependencies.
-The \href{https://github.com/Aky-lab/graceful-leaf-threshold-preprint/tree/v1.1}{tagged release} pins Lean and Mathlib.
-The elementary proof below establishes the displayed degree-eleven theorem. In particular, the theorem
-allows all new leaves at one vertex, arbitrary uneven distributions,
-and cores with unbounded diameter, degree, or number of leaves.
-It does not prove that every tree is graceful: a target need not have
-enough leaves relative to its chosen core.
+The hypothesis uses the number of vertices before attachment and the number
+of edges after attachment. It allows all new leaves at a single vertex.
+The general Graceful Tree Conjecture remains open.
 
 Superdock proved eventual gracefulness with all new leaves at a single
 prescribed vertex \cite[Corollary 5.10]{S}. Iterating such a result lets
@@ -76,17 +63,117 @@ Two elementary operations preserve this equality of multisets. At a
 parent of rank $p$, new children of ranks $x,p-x$, with $0<x<p$,
 supply differences $p-x,x$. Also leaves of ranks $x,y$ can be moved
 between parents of ranks $p,q$ when $x+y=p+q$ and the corresponding
-absolute differences are exchanged. Every use below checks the ranges
-and availability of the slots. Provisional parents merely describe a
-final assignment of the prescribed vertices, not additional vertices.
+absolute differences are exchanged. The two constructions below use only vertices of the prescribed extension.
+We state their quantitative guarantees explicitly. The linked Lean modules
+give the detailed labeling constructions.
 
-If two demands are large, we place their vertices at $0,P$, steer every
-other site within a controlled distance of these ranks, and use two
-intervals to allocate all remaining leaves. If the second demand is
-small, its total contribution is polynomially bounded. A rooted
-consistent labeling with polynomial span then leaves enough reflection
-pairs for these smaller demands; the largest site takes the complement.
-\input{polynomial}
+\section{Completion from one or two large supplies}
+Choose a vertex $u$ of maximum demand, let $q$ count vertices of positive
+demand, and let $o$ count vertices other than $u$ whose demand is odd.
+Under the edge hypothesis of Theorem~\ref{poly}, some demand is positive,
+so $0\le o<q\le n$. Write $S=n+o$. For $q\ge2$ put
+\[
+ T=(q-1)^2\bigl(1236n+1200q-3764-1200\max(0,o-1)\bigr),
+ \qquad L=(q-1)(T-2).
+\]
+For $q=1$ set $L=0$; the two-site case is then absent.
+Define the seed and packing allowances by
+\[
+ A(S)=4096S^6(9+3\lceil\log_2 S\rceil),\qquad
+ P(S,L)=200S^3\bigl(2(S-1)+2L+1\bigr).
+\]
+
+\begin{lemma}[Completion alternatives]\label{routes}
+If $q\ge2$ and some $v\ne u$ has demand at least $T$, the extension is graceful.
+In the absence of such a site, the extension is graceful whenever
+$N\ge A(S)+P(S,L)$.
+\end{lemma}
+\begin{proof}
+In the first case both $u$ and $v$ meet the threshold, by maximality of $u$.
+For each of the other positive sites reserve one requested leaf if its
+demand is odd and two if it is even. If $r$ is the number reserved, then
+\[
+ r+o=2(q-2)+(a_v\bmod 2).
+\]
+Thus the enlarged core has at most $j=n+2q-5-\max(0,o-1)$ edges.
+The \proofmodule{ParityPacketTwoBank}{two-site construction} uses a
+modular labeling and transfers leaves between the two chosen sites.
+For $m=q-1$ its sufficient demand at each is
+$40m^2(30j+25-30m)+36m^2(n+1)$, which expands to $T$.
+The \proofmodule{ParityPacketPalette}{palette estimates} give enough
+available ranks in the two intervals, and the construction also handles
+its exceptional double-broom case.
+
+In the other case include one requested leaf at each odd site off $u$.
+The prepared core has order $S$ and every remaining demand off $u$ is
+even. When $q\ge2$, $T$ is even, so each such residual demand is at most
+$T-2$. Their total is at most $L$ (zero also when $q=1$).
+The \proofmodule{SparsePackingAssembly}{one-site packing bound}, applied in
+\proofmodule{ParityPacketAssembly}{the completion lemma}, uses $A(S)$ for
+the prepared rooted labeling and $P(S,L)$ to make room for the residual
+pairs. At rank $p$ these pairs have the form $\{x,p-x\}$; unused ranks
+then complete the demand at the root $u$. This gives a labeling of the
+entire prescribed extension.
+\end{proof}
+
+For example, consider the six-vertex path $0,1,2,3,4$ with an extra
+leaf $5$ at vertex $1$. Prescribe respectively $24{,}209$, $24{,}209$,
+and one new leaf at $0,4,5$. With $u=0$ we have $q=3$ and $o=2$.
+The threshold at each of $0$ and $4$ is $24{,}208$, so the first case
+already constructs the target. Ignoring the two off-root parity bits
+would give a threshold of $29{,}008$. This example is included in the
+\proofmodule{ParityPacketRegression}{checked regression examples}.
+
+\section{The uniform estimate}
+\begin{proof}[Proof of Theorem~\ref{poly}]
+By Lemma~\ref{routes} it suffices to show
+$A(S)+P(S,L)\le3{,}955{,}201n^7$. The correlation between $S$ and
+$T$ matters: an additional odd site enlarges the prepared core but also
+reduces the two-site reserve. For $n\ge6$ write $B=2n-1$ and
+$C=3636n-2564$. Then $S\le B$. Put
+\[
+ U=\max(1,q-1)^2(1236n+1200q-1200o-2564).
+\]
+We have $L\le(q-1)U$ by the formula for $T$ when $q\ge2$, and
+$2(S-1)+1\le U$ since $o<q$ and $S\le2n-1$.
+Consequently
+\[
+ 2(S-1)+2L+1\le B U,\qquad U\le(n-1)^2(C-1200S).
+\]
+The function $s^3(C-1200s)$ is increasing on $[0,B]$, since
+its derivative is $3s^2(C-1600s)$ and $1600B\le C$.
+Hence the packing cost is at most
+\[
+ E(n)=200(2n-1)^4(n-1)^2(1236n-1364).
+\]
+The leading coefficient here is $200\cdot 2^4\cdot1236=3{,}955{,}200$.
+
+For the seed, set $t=\lfloor S/2^{21}\rfloor$. Since
+$S\le2^{21}(t+1)\le2^{21+t}$ and $S\le2n$, we get
+\[
+ A(S)\le4096(2n)^6(72+3t)\le18{,}874{,}368n^6+n^7.
+\]
+For $n\ge32$, substituting $n=x+32$ into
+$3{,}955{,}200n^7-E(n)-18{,}874{,}368n^6$ gives a polynomial with
+nonnegative coefficients. In ascending order of degree these are
+\[
+\begin{gathered}
+10{,}901{,}718{,}756{,}768,\quad 44{,}127{,}171{,}891{,}744,\quad
+6{,}783{,}308{,}678{,}880,\\
+423{,}670{,}516{,}320,\quad 13{,}283{,}768{,}320,\quad
+208{,}588{,}544,\quad 1{,}311{,}232 .
+\end{gathered}
+\]
+This absorbs the degree-six seed term and
+leaves one further copy of $n^7$ for the seed. For $6\le n<32$ direct
+integer substitution gives $A(2n-1)+E(n)\le3{,}955{,}201n^7$.
+For $1\le n\le5$ substitute the finitely many $1\le q\le n$ and
+$0\le o<q$ directly into $A(S)+P(S,L)$. The
+\proofmodule{ParityPacketUniform}{formal uniform estimate} includes
+the polynomial identity and the exact small-case checks. This proves the
+bound in both completion cases.
+\end{proof}
+
 \section{Effective consequences}
 \begin{corollary}\label{effective}
 For each finite tree $H$ on $n$ vertices, the least nonnegative integer
@@ -101,7 +188,7 @@ The complete finite list of nongraceful attachment vectors is computable.
 Set $U=3{,}955{,}201n^7-(n-1)$. Enumerate all nonnegative integer
 vectors on $V(H)$ of total less than $U$. Each resulting finite tree
 can be tested for gracefulness by enumerating its vertex bijections.
-The degree-seven refinement certifies every omitted vector. If no vector fails,
+Theorem~\ref{poly} certifies every omitted vector. If no vector fails,
 return $B(H)=0$; otherwise return one plus the largest failing total.
 This proves computability, not practical efficiency of this enumeration.
 \end{proof}
@@ -109,8 +196,8 @@ This proves computability, not practical efficiency of this enumeration.
 \begin{corollary}\label{internalorder}
 A nongraceful tree with $N$ edges and $h$ internal vertices must satisfy
 \[
- N<10^{16}(h+1)^{11},\qquad
- h>(N/10^{16})^{1/11}-1.
+ N<3{,}955{,}201h^7,\qquad
+ h>(N/3{,}955{,}201)^{1/7}.
 \]
 For each fixed $h$, all nongraceful trees with at most $h$ internal
 vertices can therefore be listed by a finite computation.
@@ -123,15 +210,15 @@ only finitely many trees remain below the displayed edge bound.
 \end{proof}
 \end{samepage}
 
-Applying the formal degree-seven bound to the internal subtree sharpens the
-necessary inequality to $N<3{,}955{,}201 h^7$, hence
-$h>(N/3{,}955{,}201)^{1/7}$. This is the second graph statement
-checked by the release build.
-
-The same ideas admit refinements under bounded leaf count or diameter,
-and constraints on internal-label divisibility. Those refinements,
-exact insertion criteria, and bounded-defect repair problems are treated
-in separate companion manuscripts; none is required for this proof.
+\section*{Checking the formal proof}
+Clone the \href{https://github.com/Aky-lab/graceful-leaf-threshold-preprint/tree/v1.1}{tagged public source}
+and enter its \texttt{lean/} directory. With Elan installed, run
+\texttt{lake exe cache get} followed by \texttt{lake build}.
+The manifest pins Mathlib and the toolchain file selects Lean 4.30.0.
+The default target compiles the \proofmodule{TreeEncodingPolynomialParityPacket}{graph-level theorems}
+for the prescribed extension and for the internal-vertex bound.
+It checks their axiom dependencies against propositional extensionality,
+classical choice, and quotient soundness.
 \small\begin{thebibliography}{9}
 \bibitem{LM} L. Lapierre and S. McGuinness, Constructing trees with graceful labelings using caterpillars, \emph{J. Combin. Math. Combin. Comput.} \textbf{94} (2015), 313--321.
 \bibitem{S} M. Superdock, The Graceful Tree Conjecture: a class of graceful diameter-6 trees, \href{https://arxiv.org/abs/1403.1564}{arXiv:1403.1564} (2014).
